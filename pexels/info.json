@@ -1,0 +1,32 @@
+{
+    "author" : [
+        "jmes"
+    ],
+	"description" : "Displays pictures from Pexels API using PyPexels",
+    "disabled" : false,
+    "end_user_data_statement" : "This cog does not persistently store data or metadata about users.",
+    "hidden" : false,
+    "install_msg" : "Pexels API for Red-DiscordBot\n1. Get a key here: \nhttps://www.pexels.com/join\n2. Set the key: \n[p]set api pexels api_key,your-api-key\n",
+    "max_bot_version" : "0.0.0",
+    "min_bot_version" : "3.1.8",
+    "min_python_version" : [
+        3,
+        7,
+        2
+    ],
+    "name" : "Pexels",
+    "permissions" : [
+        "embed_links",
+		"add_reactions"
+    ],
+    "required_cogs" : {},
+    "requirements" : [
+        "pypexels>=1.0.0rc1"
+    ],
+    "short" : "Cog for getting pictures from Pexels.com",
+    "tags" : [
+        "pexels",
+        "pypexels"
+    ],
+    "type" : "COG"
+}

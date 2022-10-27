@@ -1,0 +1,25 @@
+{
+    "name": "WhaleAlert",
+    "short": "Latest transactions from whale-alert.io",
+    "description": "Obtains the latest crypto whale alert transactions via whale-alert.io API.",
+    "end_user_data_statement": "This cog does not persistently store any data or metadata about users.",
+    "author": [
+        "jmes"
+    ],
+    "required_cogs": {},
+    "requirements": ["whale-alert"],
+    "tags": [
+        "crypto",
+        "cryptocurrency",
+        "whale",
+        "alert",
+        "bitcoin",
+        "ethereum",
+        "btc",
+        "eth"
+    ],
+    "min_bot_version": "3.3.10",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
