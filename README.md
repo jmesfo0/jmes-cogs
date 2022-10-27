@@ -16,7 +16,7 @@ jmes cogs for Red-DiscordBot
 - [Node.js 16](https://nodejs.org/dist/v16.17.1/)<br>
 - [Dotnet Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)<br>
 
-### Need Help? Contact
+### Need Help?
 [jmes#1396](https://discordapp.com/users/309536563161989120)<br>
 [jmes Discord](https://discord.jmes.dev)<br>
 [Red Cog Support](https://discord.gg/GET4DVk) - [#other-cogs](https://discord.com/channels/240154543684321280/240212783503900673)
