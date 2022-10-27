@@ -12,7 +12,6 @@ import time
 
 from redbot.core import Config, commands, data_manager, checks, bank
 from redbot.core.data_manager import bundled_data_path, cog_data_path
-from redbot.core.utils.chat_formatting import bold
 
 log = logging.getLogger("red.jmes-cogs.Obfuscator")
 
@@ -57,7 +56,7 @@ class Obfuscator(commands.Cog):
         Run the command with a file attachment or code block.
         Type is optional.
         
-        """
+        """  
         if type is None:
             return await self._luaseel(ctx)      
         return
@@ -82,6 +81,10 @@ class Obfuscator(commands.Cog):
                 with open(path, "w") as file:
                     file.write(x[0])
                 self.obfuscation_luaseel(path, filename)
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)
                 with open(obfuscated, 'r+') as fp:
                     lines = fp.readlines()
                     if watermark:
@@ -98,6 +101,7 @@ class Obfuscator(commands.Cog):
                 os.remove(obfuscated)             
             elif ctx.message.attachments:
                 if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
                     
@@ -110,6 +114,10 @@ class Obfuscator(commands.Cog):
                     os.remove(path)
                 open(path, "w").write(response)
                 self.obfuscation_luaseel(path, filename)
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)
                 with open(obfuscated, 'r+') as fp:
                     lines = fp.readlines()
                     if watermark:
@@ -160,6 +168,10 @@ class Obfuscator(commands.Cog):
                     with open(path, "w") as file:
                         file.write(x[0])
                     self.obfuscation_luaseel(path, filename)
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)
                     with open(obfuscated, 'r+') as fp:
                         lines = fp.readlines()
                         if watermark:
@@ -177,6 +189,7 @@ class Obfuscator(commands.Cog):
                     os.remove(obfuscated)             
                 elif ctx.message.attachments:
                     if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                        ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
                         
@@ -189,6 +202,10 @@ class Obfuscator(commands.Cog):
                         os.remove(path)
                     open(path, "w").write(response)
                     self.obfuscation_luaseel(path, filename)
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)
                     with open(obfuscated, 'r+') as fp:
                         lines = fp.readlines()
                         if watermark:
@@ -233,6 +250,10 @@ class Obfuscator(commands.Cog):
                     subprocess.check_output(f"cd {file_path} && npm install",shell=True,stderr=subprocess.STDOUT)
                     subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
                 subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(output_file):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)                
                 with open(output_file, 'r') as file:
                     filedata = file.read()
                 with open(obfuscated, 'w') as file:
@@ -254,6 +275,7 @@ class Obfuscator(commands.Cog):
                 os.remove(output_file)
             elif ctx.message.attachments:
                 if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
                 url = ctx.message.attachments[0].url
@@ -267,6 +289,10 @@ class Obfuscator(commands.Cog):
                     subprocess.check_output(f"cd {file_path} && npm install",shell=True,stderr=subprocess.STDOUT)
                     subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
                 subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(output_file):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)                
                 with open(f"{file_path}//obfuscated//output.lua", 'r') as file:
                     filedata = file.read()
                 with open(obfuscated, 'w') as file:
@@ -326,6 +352,10 @@ class Obfuscator(commands.Cog):
                         subprocess.check_output(f"cd {file_path} && npm install",shell=True,stderr=subprocess.STDOUT)
                         subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
                     subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
+                    if not os.path.exists(output_file):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)                    
                     with open(output_file, 'r') as file:
                         filedata = file.read()
                     with open(obfuscated, 'w') as file:
@@ -348,6 +378,7 @@ class Obfuscator(commands.Cog):
                     os.remove(output_file)
                 elif ctx.message.attachments:
                     if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                        ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
                     url = ctx.message.attachments[0].url
@@ -361,7 +392,11 @@ class Obfuscator(commands.Cog):
                         subprocess.check_output(f"cd {file_path} && npm install",shell=True,stderr=subprocess.STDOUT)
                         subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
                     subprocess.check_output(f"cd {file_path} && node menprotect_cli.js",shell=True,stderr=subprocess.STDOUT)
-                    with open(f"{file_path}//obfuscated//output.lua", 'r') as file:
+                    if not os.path.exists(output_file):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)                    
+                    with open(output_file, 'r') as file:
                         filedata = file.read()
                     with open(obfuscated, 'w') as file:
                         file.write(filedata)
@@ -408,6 +443,10 @@ class Obfuscator(commands.Cog):
                 with open(upload, "w") as file:
                     file.write(x[0])
                 subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)                
                 with open(obfuscated, 'r+') as fp:
                     lines = fp.readlines()
                     if watermark:
@@ -424,6 +463,7 @@ class Obfuscator(commands.Cog):
                 os.remove(obfuscated)
             elif ctx.message.attachments:
                 if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
                 url = ctx.message.attachments[0].url
@@ -434,6 +474,10 @@ class Obfuscator(commands.Cog):
                     os.remove(upload)
                 open(upload, "w", encoding="utf8").write(response)
                 subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)                
                 with open(obfuscated, 'r+') as fp:
                     lines = fp.readlines()
                     if watermark:
@@ -485,6 +529,10 @@ class Obfuscator(commands.Cog):
                     with open(upload, "w") as file:
                         file.write(x[0])
                     subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)
                     with open(obfuscated, 'r+') as fp:
                         lines = fp.readlines()
                         if watermark:
@@ -502,6 +550,7 @@ class Obfuscator(commands.Cog):
                     os.remove(obfuscated)
                 elif ctx.message.attachments:
                     if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                        ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
                     url = ctx.message.attachments[0].url
@@ -512,6 +561,10 @@ class Obfuscator(commands.Cog):
                         os.remove(upload)
                     open(upload, "w", encoding="utf8").write(response)
                     subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed) 
                     with open(obfuscated, 'r+') as fp:
                         lines = fp.readlines()
                         if watermark:
@@ -554,6 +607,10 @@ class Obfuscator(commands.Cog):
                 with open(upload, "w") as file:
                     file.write(x[0])
                 subprocess.check_output(f"cd {file_path} && dotnet IronBrew2CLI.dll {path}",shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(output_file):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)                
                 with open(output_file, 'r') as file:
                     filedata = file.read()
                 with open(obfuscated, 'w') as file:
@@ -576,6 +633,7 @@ class Obfuscator(commands.Cog):
                 
             elif ctx.message.attachments:
                 if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
                 url = ctx.message.attachments[0].url
@@ -586,6 +644,10 @@ class Obfuscator(commands.Cog):
                     os.remove(upload)
                 open(upload, "w", encoding="utf8").write(response)
                 subprocess.check_output(f"cd {file_path} && dotnet IronBrew2CLI.dll {path}",shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(output_file):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)
                 with open(output_file, 'r') as file:
                     filedata = file.read()
                 with open(obfuscated, 'w') as file:
@@ -641,6 +703,10 @@ class Obfuscator(commands.Cog):
                     with open(upload, "w") as file:
                         file.write(x[0])
                     subprocess.check_output(f"cd {file_path} && dotnet IronBrew2CLI.dll {path}",shell=True,stderr=subprocess.STDOUT)
+                    if not os.path.exists(output_file):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)                    
                     with open(output_file, 'r') as file:
                         filedata = file.read()
                     with open(obfuscated, 'w') as file:
@@ -664,6 +730,7 @@ class Obfuscator(commands.Cog):
                     
                 elif ctx.message.attachments:
                     if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                        ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
                     url = ctx.message.attachments[0].url
@@ -674,6 +741,10 @@ class Obfuscator(commands.Cog):
                         os.remove(upload)
                     open(upload, "w", encoding="utf8").write(response)
                     subprocess.check_output(f"cd {file_path} && dotnet IronBrew2CLI.dll {path}",shell=True,stderr=subprocess.STDOUT)
+                    if not os.path.exists(output_file):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)
                     with open(output_file, 'r') as file:
                         filedata = file.read()
                     with open(obfuscated, 'w') as file:
@@ -700,7 +771,6 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)
 
-                
     @obfuscate.command(name="bytecode")
     async def _bytecode(self, ctx: commands.Context):
         """
@@ -721,6 +791,10 @@ class Obfuscator(commands.Cog):
                 with open(upload, "w") as file:
                     file.write(x[0])
                 subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)                
                 with open(obfuscated, 'r+') as fp:
                     lines = fp.readlines()
                     if watermark:
@@ -737,6 +811,7 @@ class Obfuscator(commands.Cog):
                 os.remove(obfuscated)
             elif ctx.message.attachments:
                 if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
                 url = ctx.message.attachments[0].url
@@ -747,7 +822,10 @@ class Obfuscator(commands.Cog):
                     os.remove(upload)
                 open(upload, "w", encoding="utf8").write(response)
                 subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
-
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed) 
                 with open(obfuscated, 'r+') as fp:
                     lines = fp.readlines()
                     if watermark:
@@ -774,13 +852,10 @@ class Obfuscator(commands.Cog):
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
             new_balance = balance - cost
-            
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
-
             if not ctx.message.author.bot and ctx.message.channel.id == await self.config.guild(ctx.guild).obfuscator_channel():
-                
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
@@ -795,6 +870,10 @@ class Obfuscator(commands.Cog):
                     with open(upload, "w") as file:
                         file.write(x[0])
                     subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed) 
                     with open(obfuscated, 'r+') as fp:
                         lines = fp.readlines()
                         if watermark:
@@ -812,6 +891,7 @@ class Obfuscator(commands.Cog):
                     os.remove(obfuscated)
                 elif ctx.message.attachments:
                     if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                        ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
                     url = ctx.message.attachments[0].url
@@ -822,7 +902,10 @@ class Obfuscator(commands.Cog):
                         os.remove(upload)
                     open(upload, "w", encoding="utf8").write(response)
                     subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
-
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed) 
                     with open(obfuscated, 'r+') as fp:
                         lines = fp.readlines()
                         if watermark:
@@ -842,7 +925,28 @@ class Obfuscator(commands.Cog):
                     embed = discord.Embed(title="No file or code block", color=0xED4245)
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)
-             
+                    
+    @obfuscate.command(name="version", aliases=["about"])
+    async def version(self, ctx: commands.Context):
+        """Display version information."""
+        embed = discord.Embed(title="Version/About", description=("\nObfuscator version: {}\nCog author: [{}](https://discordapp.com/users/309536563161989120)").format(self.__version__,self.__author__), color=0x000088)
+        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+        await ctx.send(embed=embed)
+        
+    @obfuscate.command(name="help")
+    async def help(self, ctx: commands.Context):
+        """Display help information."""
+        embed = discord.Embed(title="Obfuscator Commands", colour=0x000088)
+        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+        embed.add_field(name="obfuscate", value="the default obfuscator command", inline=False) 
+        embed.add_field(name="obfuscate luaseel", value="LuaSeel Obfuscator (default)", inline=False)        
+        embed.add_field(name="obfuscate menprotect", value="Menprotect Obfuscator", inline=False)        
+        embed.add_field(name="obfuscate prometheus", value="Prometheus Obfuscator", inline=False)        
+        embed.add_field(name="obfuscate ironbrew", value="IronBrew Obfuscator", inline=False)        
+        embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
+        embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
+        await ctx.send(embed=embed)                    
+                
     @commands.group()
     async def obfuscatorset(self, ctx: commands.Context) -> None:
         """Various settings."""
@@ -882,33 +986,15 @@ class Obfuscator(commands.Cog):
     @checks.is_owner()
     @commands.guild_only()
     @obfuscatorset.command()
-    async def watermark(self, ctx: commands.context, *, value: str):
+    async def watermark(self, ctx: commands.context, *, value: Optional[str] = None) -> None:
         """Set the watermark for obfuscator."""
+        if value is None:
+            await ctx.send(("Obfuscator watermark reset."))
+            return await self.config.watermark.clear()
         await self.config.watermark.set(value)
         await ctx.send(("Obfuscator watermark: {}").format(value))
-            
-    @obfuscate.command(name="version", aliases=["about"])
-    async def version(self, ctx: commands.Context):
-        """Display version information."""
-        embed = discord.Embed(title="Version/About", description=("\nObfuscator version: {}\nCog author: [{}](https://discordapp.com/users/309536563161989120)").format(self.__version__,self.__author__), color=0x000088)
-        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
-        await ctx.send(embed=embed)
-        
-    @obfuscate.command(name="help")
-    async def help(self, ctx: commands.Context):
-        """Display help information."""
-        embed = discord.Embed(title="Obfuscator Commands", colour=0x000088)
-        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
-        embed.add_field(name="obfuscate", value="the default obfuscator command", inline=False) 
-        embed.add_field(name="obfuscate luaseel", value="LuaSeel Obfuscator (default)", inline=False)        
-        embed.add_field(name="obfuscate menprotect", value="Menprotect Obfuscator", inline=False)        
-        embed.add_field(name="obfuscate prometheus", value="Prometheus Obfuscator", inline=False)        
-        embed.add_field(name="obfuscate ironbrew", value="IronBrew Obfuscator", inline=False)        
-        embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
-        embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
-        await ctx.send(embed=embed)
                                     
-    def obfuscation_luaseel(self, path, filename):    
+    def obfuscation_luaseel(self, path, filename):
         obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
         copy = "{}/{}/{}".format(file_path, "obfuscated", filename + ".lua")
         if os.path.exists(copy):
@@ -937,4 +1023,4 @@ class Obfuscator(commands.Cog):
         f = open(obfuscated, "a")
         f.write(output)
         f.close()
-        os.remove(copy) 
+        os.remove(copy)
