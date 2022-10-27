@@ -57,11 +57,8 @@ class Obfuscator(commands.Cog):
         Run the command with a file attachment or code block.
         Type is optional.
         
-        """  
-        type_to_string = str(type)
-        x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
-        
-        if x or type is None:
+        """
+        if type is None:
             return await self._luaseel(ctx)      
         return
 
