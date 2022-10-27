@@ -2,7 +2,6 @@
     "name": "The Lounge",
     "short": "a custom cog for THE_LOUNGE",
     "description": "this is a custom cog for THE_LOUNGE discord",
-    "end_user_data_statement": "This cog does not persistently store any data or metadata about users.",
     "author": [
         "jmes"
     ],
