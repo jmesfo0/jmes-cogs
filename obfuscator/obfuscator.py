@@ -21,7 +21,7 @@ class Obfuscator(commands.Cog):
     """
     Lua Obfuscator for Red-DiscordBot
     
-    This cog includes 5 different types of lua obfuscators to secure Roblox/FiveM scripts.
+    Various types of lua obfuscation to secure Roblox/FiveM scripts.
     """
     __version__ = "1.0.5"
     __author__ = "jmes"
@@ -36,7 +36,7 @@ class Obfuscator(commands.Cog):
             "is_whitelisted": False,
         }
         default_guild = {
-            "obfuscator_channel": "",
+            "obfuscator_channel": [],
             "cost": 0,
         }           
         self.config.register_global(**default_global)
@@ -53,18 +53,20 @@ class Obfuscator(commands.Cog):
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)    
     async def obfuscate(self, ctx: commands.Context, type: Optional[commands.Context] = None) -> None:
         """
-        Roblox/FiveM Lua Obfuscator
+        Lua Obfuscator
         
         Run the command with a Lua file attachment or code block.
         [p]obfuscate help for more options.
-        """  
+        """
         if type is None:
             return await self._luaseel(ctx)      
         return
 
     @obfuscate.command(name="luaseel")
     async def _luaseel(self, ctx: commands.Context):
-        """LuaSeel obfuscation."""
+        """
+        LuaSeel obfuscation.
+        """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
             filename = ''.join(random.choice(letters) for i in range(7))
@@ -103,6 +105,7 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
+                    
                 url = ctx.message.attachments[0].url
                 async with aiohttp.ClientSession() as session:
                     async with session.get(url) as resp:
@@ -147,7 +150,7 @@ class Obfuscator(commands.Cog):
             if not await bank.can_spend(ctx.author, cost):
                 await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
                 return     
-            if not ctx.message.author.bot and ctx.message.channel.id == await self.config.guild(ctx.guild).obfuscator_channel():
+            if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).obfuscator_channel():
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
@@ -222,7 +225,9 @@ class Obfuscator(commands.Cog):
 
     @obfuscate.command(name="menprotect")
     async def _menprotect(self, ctx: commands.Context) -> None:
-        """Menprotect obfuscation."""
+        """
+        Menprotect obfuscation.
+        """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
             filename = ''.join(random.choice(letters) for i in range(7))
@@ -307,7 +312,7 @@ class Obfuscator(commands.Cog):
             else:
                 embed = discord.Embed(title="No file or code block", color=0xED4245)
                 ctx.command.reset_cooldown(ctx)
-                await ctx.send(embed=embed)   
+                await ctx.send(embed=embed)
         else:
             if ctx.guild is None:
                 return
@@ -315,13 +320,14 @@ class Obfuscator(commands.Cog):
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
             new_balance = balance - cost
+            
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
             if not await bank.can_spend(ctx.author, cost):
                 await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
                 return    
-            if not ctx.message.author.bot and ctx.message.channel.id == await self.config.guild(ctx.guild).obfuscator_channel():
+            if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).obfuscator_channel():                 
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
@@ -330,8 +336,7 @@ class Obfuscator(commands.Cog):
                 upload = "{}/{}/{}".format(file_path, "uploads", "input.lua")
                 watermark = await self.config.watermark()
                 node_folder = "{}/{}".format(file_path, "node_modules")        
-                start_time = time.time()
-                
+                start_time = time.time()                
                 if x:
                     if os.path.exists(upload):
                         os.remove(upload)
@@ -409,10 +414,12 @@ class Obfuscator(commands.Cog):
                     embed = discord.Embed(title="No file or code block", color=0xED4245)
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)   
-
+                
     @obfuscate.command(name="prometheus")
     async def _prometheus(self, ctx: commands.Context):
-        """Prometheus obfuscation."""
+        """
+        Prometheus obfuscation.
+        """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
             filename = ''.join(random.choice(letters) for i in range(7))
@@ -421,7 +428,7 @@ class Obfuscator(commands.Cog):
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
             path = "{}/{}".format("./uploads", filename + ".lua")
             watermark = await self.config.watermark()
-            start_time = time.time()
+            start_time = time.time()            
             if x:
                 if os.path.exists(upload):
                     os.remove(upload)
@@ -487,14 +494,14 @@ class Obfuscator(commands.Cog):
             cost = await self.config.guild(ctx.guild).cost()
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
-            new_balance = balance - cost          
+            new_balance = balance - cost            
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
-                new_balance = balance             
+                new_balance = balance                
             if not await bank.can_spend(ctx.author, cost):
                 await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
                 return        
-            if not ctx.message.author.bot and ctx.message.channel.id == await self.config.guild(ctx.guild).obfuscator_channel():
+            if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).obfuscator_channel():                 
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
@@ -502,7 +509,7 @@ class Obfuscator(commands.Cog):
                 upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
                 path = "{}/{}".format("./uploads", filename + ".lua")
                 watermark = await self.config.watermark()
-                start_time = time.time()        
+                start_time = time.time()                
                 if x:
                     if os.path.exists(upload):
                         os.remove(upload)
@@ -564,11 +571,12 @@ class Obfuscator(commands.Cog):
                     embed = discord.Embed(title="No file or code block", color=0xED4245)
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)
-
                 
     @obfuscate.command(name="ironbrew")
     async def _ironbrew(self, ctx: commands.Context):
-        """IronBrew2 obfuscation."""
+        """
+        IronBrew2 obfuscation.
+        """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
             filename = ''.join(random.choice(letters) for i in range(7))
@@ -578,7 +586,7 @@ class Obfuscator(commands.Cog):
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
             watermark = await self.config.watermark()
             path = "{}/{}".format("./uploads", filename + ".lua")
-            start_time = time.time()
+            start_time = time.time()            
             if x:
                 if os.path.exists(upload):
                     os.remove(upload)
@@ -607,7 +615,7 @@ class Obfuscator(commands.Cog):
                 await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
                 os.remove(upload)
                 os.remove(obfuscated)
-                os.remove(output_file) 
+                os.remove(output_file)  
             elif ctx.message.attachments:
                 if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
                     ctx.command.reset_cooldown(ctx)
@@ -657,8 +665,8 @@ class Obfuscator(commands.Cog):
             new_balance = balance - cost
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
-                new_balance = balance
-            if not ctx.message.author.bot and ctx.message.channel.id == await self.config.guild(ctx.guild).obfuscator_channel():
+                new_balance = balance 
+            if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).obfuscator_channel():        
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
@@ -735,7 +743,6 @@ class Obfuscator(commands.Cog):
                     os.remove(upload)
                     os.remove(obfuscated)
                     os.remove(output_file)
-                    
                 else:
                     embed = discord.Embed(title="No file or code block", color=0xED4245)
                     ctx.command.reset_cooldown(ctx)
@@ -813,7 +820,7 @@ class Obfuscator(commands.Cog):
             else:
                 embed = discord.Embed(title="No file or code block", color=0xED4245)
                 ctx.command.reset_cooldown(ctx)
-                await ctx.send(embed=embed)  
+                await ctx.send(embed=embed)
         else:
             if ctx.guild is None:
                 return
@@ -824,7 +831,7 @@ class Obfuscator(commands.Cog):
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
-            if not ctx.message.author.bot and ctx.message.channel.id == await self.config.guild(ctx.guild).obfuscator_channel():
+            if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).obfuscator_channel():                
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
@@ -894,42 +901,27 @@ class Obfuscator(commands.Cog):
                     embed = discord.Embed(title="No file or code block", color=0xED4245)
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)
-                    
-    @obfuscate.command(name="version", aliases=["about"])
-    async def version(self, ctx: commands.Context):
-        """Display version information."""
-        embed = discord.Embed(title="Version/About", description=("\nObfuscator version: {}\nCog author: [{}](https://discordapp.com/users/309536563161989120)").format(self.__version__,self.__author__), color=0x000088)
-        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
-        await ctx.send(embed=embed)
-        
-    @obfuscate.command(name="help")
-    async def help(self, ctx: commands.Context):
-        """Display help information."""
-        embed = discord.Embed(title="Obfuscator Commands", colour=0x000088)
-        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
-        embed.add_field(name="obfuscate", value="the default obfuscator command", inline=False) 
-        embed.add_field(name="obfuscate luaseel", value="LuaSeel Obfuscator (default)", inline=False)        
-        embed.add_field(name="obfuscate menprotect", value="Menprotect Obfuscator", inline=False)        
-        embed.add_field(name="obfuscate prometheus", value="Prometheus Obfuscator", inline=False)        
-        embed.add_field(name="obfuscate ironbrew", value="IronBrew Obfuscator", inline=False)        
-        embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
-        embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
-        await ctx.send(embed=embed)                    
-                
+     
     @commands.group()
     async def obfuscatorset(self, ctx: commands.Context) -> None:
-        """Various settings."""
+        """
+        Obfuscator settings.
+        """
         pass
     
     @checks.is_owner()
     @commands.guild_only()
     @obfuscatorset.command()
-    async def channel(self, ctx: commands.context, channel: Optional[discord.TextChannel] = None) -> None:
-        """Set the channel for obfuscator."""
-        if channel is None:
-            channel = ctx.channel
-        await self.config.guild(ctx.guild).obfuscator_channel.set(channel.id)
-        await ctx.send(("Obfuscator channel: {}").format(channel.mention))
+    async def channel(self, ctx: commands.Context, *, channel: discord.TextChannel):
+        """Set the channels for obfuscator."""
+        if channel.id in await self.config.guild(ctx.guild).obfuscator_channel():
+            async with self.config.guild(ctx.guild).obfuscator_channel() as data:
+                data.remove(channel.id)
+            await ctx.send(("{} removed from obfuscator channels.").format(channel.mention))
+        else:
+            async with self.config.guild(ctx.guild).obfuscator_channel() as data:
+                data.append(channel.id)
+            await ctx.send(("{} added to obfuscator channels.").format(channel.mention))    
         
     @checks.is_owner()
     @commands.guild_only()
@@ -944,13 +936,13 @@ class Obfuscator(commands.Cog):
     @commands.guild_only()
     @obfuscatorset.command(name="user")
     async def _user(self, ctx: commands.Context, *, user: discord.Member):
-        """Add or remove user from whitelist/DM obfuscation."""
+        """add/remove user from direct message obfuscation."""
         if await self.config.user(user).is_whitelisted():
             await self.config.user(user).is_whitelisted.set(False)
-            await ctx.send(("Obfuscator whitelist/DMs disabled for: {}.").format(user))
+            await ctx.send(("{} removed from obfuscator whitelist.").format(user.mention))
         else:
             await self.config.user(user).is_whitelisted.set(True)
-            await ctx.send(("Obfuscator whitelist/DMs enabled for: {}.").format(user))
+            await ctx.send(("{} added to obfuscator whitelist.").format(user.mention))
 
     @checks.is_owner()
     @commands.guild_only()
@@ -962,6 +954,27 @@ class Obfuscator(commands.Cog):
             return await self.config.watermark.clear()
         await self.config.watermark.set(value)
         await ctx.send(("Obfuscator watermark: {}").format(value))
+            
+    @obfuscate.command(name="version", aliases=["about"])
+    async def version(self, ctx: commands.Context):
+        """Display version information."""
+        embed = discord.Embed(title="Version/About", description=("\nObfuscator version: {}\nCog author: [{}](https://discordapp.com/users/309536563161989120)").format(self.__version__,self.__author__), color=0x000088)
+        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+        await ctx.send(embed=embed)
+        
+    @obfuscate.command(name="help")
+    async def obfuscator_help(self, ctx: commands.Context):
+        """Display help information."""
+        embed = discord.Embed(title="Obfuscator Commands", colour=0x000088)
+        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+        embed.add_field(name="obfuscate", value="the default obfuscator command", inline=False) 
+        embed.add_field(name="obfuscate luaseel", value="LuaSeel Obfuscator (default)", inline=False)        
+        embed.add_field(name="obfuscate menprotect", value="Menprotect Obfuscator", inline=False)        
+        embed.add_field(name="obfuscate prometheus", value="Prometheus Obfuscator", inline=False)        
+        embed.add_field(name="obfuscate ironbrew", value="IronBrew Obfuscator", inline=False)        
+        embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
+        embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
+        await ctx.send(embed=embed)
                                     
     def obfuscation_luaseel(self, path, filename):
         obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
