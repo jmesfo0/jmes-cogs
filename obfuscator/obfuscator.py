@@ -914,6 +914,8 @@ class Obfuscator(commands.Cog):
     @obfuscatorset.command()
     async def channel(self, ctx: commands.Context, *, channel: discord.TextChannel):
         """Set the channels for obfuscator."""
+        if channel is None:
+            channel = ctx.channel
         if channel.id in await self.config.guild(ctx.guild).obfuscator_channel():
             async with self.config.guild(ctx.guild).obfuscator_channel() as data:
                 data.remove(channel.id)
