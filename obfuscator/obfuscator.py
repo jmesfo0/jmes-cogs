@@ -955,7 +955,7 @@ class Obfuscator(commands.Cog):
         await self.config.watermark.set(value)
         await ctx.send(("Obfuscator watermark: {}").format(value))
             
-    @obfuscate.command(name="version", aliases=["about"])
+    @obfuscatorset.command(name="version", aliases=["about"])
     async def obfuscation_version(self, ctx: commands.Context):
         """Display version information."""
         embed = discord.Embed(title="Version/About", description=("\nObfuscator version: {}\nCog author: [{}](https://discordapp.com/users/309536563161989120)").format(self.__version__,self.__author__), color=0x000088)
