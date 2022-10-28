@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/Cog-Creators/Red-DiscordBot/V3/develop/schema/red_cog.schema.json",
     "name": "TacoShack",
-    "short": "TacoShack Classic ported to Red DiscordBot",
+    "short": "TacoShack Classic for Red DiscordBot",
     "description": "You are in charge of running your taco shack! You will get hourly income to pay for things. You can increase your income by purchasing upgrades or hiring employees! You yourself can also work every 10 minutes, and collect tips every 5 minutes to make some cash. Become the most sucessful taco shack around by reaching the top of the leaderboard! Either top the Most Tacos Sold or the Richest leaderboard for bragging rights.",
     "end_user_data_statement": "This cog does not persistently store any data or metadata about users.",
     "install_msg": "Thanks for installing **TacoShack Classic** for Red.\nType 'tacoshack found' to get started.",
@@ -12,11 +12,11 @@
     "requirements": [],
     "tags": [
         "tacoshack",
-		"shack",		
+	"shack",		
         "taco",
-		"tacos",
+	"tacos",
         "tacoshack classic",
-		"rpg"
+	"rpg"
     ],
     "min_bot_version": "3.3.10",
     "hidden": false,
