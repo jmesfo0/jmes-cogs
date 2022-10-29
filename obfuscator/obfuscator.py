@@ -319,8 +319,7 @@ class Obfuscator(commands.Cog):
             cost = await self.config.guild(ctx.guild).cost()
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
-            new_balance = balance - cost
-            
+            new_balance = balance - cost   
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
@@ -665,7 +664,10 @@ class Obfuscator(commands.Cog):
             new_balance = balance - cost
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
-                new_balance = balance 
+                new_balance = balance
+            if not await bank.can_spend(ctx.author, cost):
+                await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
+                return                
             if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():        
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
@@ -831,6 +833,9 @@ class Obfuscator(commands.Cog):
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
+            if not await bank.can_spend(ctx.author, cost):
+                await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
+                return                
             if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():                
                 letters = string.ascii_uppercase
                 filename = ''.join(random.choice(letters) for i in range(7))
