@@ -319,7 +319,7 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)                
-                with open(f"{file_path}//obfuscated//output.lua", "r") as file:
+                with open(output_file, "r") as file:
                     filedata = file.read()
                 with open(obfuscated, "w") as file:
                     file.write(filedata)
