@@ -145,7 +145,7 @@ class TacoShack(commands.Cog):
                     "name": "Greeter",
                     "price": 100,
                     "boost": 50,
-                    "max": 12
+                    "max": 13
                 }                        
             }
         }   
