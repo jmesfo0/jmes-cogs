@@ -154,7 +154,7 @@ class TacoShack(commands.Cog):
         log.info("TacoShack loaded.")
 
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
-    @commands.group(name="tacoshack", aliases=["t", "ts", "shack", "taco"])
+    @commands.group(name="tacoshack", aliases=["ts", "shack", "taco"])
     async def _shack(self, ctx: commands.Context) -> None:
         """Various TacoShack commands."""
         pass
