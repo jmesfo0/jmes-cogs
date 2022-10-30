@@ -561,31 +561,31 @@ class TacoShack(commands.Cog):
             employees = await self.config.employees()
             user = await self.config.user(ctx.author).shack()
             embed = discord.Embed(title="Employees", colour=0x3477e2, description=f""+
-            "**Apprentice Chef**  (" + str(user["employees"]["231"]) + "/"+str(user["employees"]["231"]["max"]+")"+
+            "**Apprentice Chef**  (" + str(user["employees"]["231"]) + "/"+str(user["employees"]["231"]["max"])+")"+
             "\nCost: $" + str(self.costcalc(employees["231"]["price"], user["employees"]["231"])) + 
             "\nBoost: +$"+str(employees["231"]["boost"])+"/hr \nID: 231\n\n"+
             
-            "**Cook**  (" + str(user["employees"]["232"]) + "/"+str(user["employees"]["232"]["max"]+")"+
+            "**Cook**  (" + str(user["employees"]["232"]) + "/"+str(user["employees"]["232"]["max"])+")"+
             "\nCost: $" + str(self.costcalc(employees["232"]["price"], user["employees"]["232"])) + 
             "\nBoost: +$"+str(employees["232"]["boost"])+"/hr \nID: 232\n\n"+
             
-            "**Sous Chef**  (" + str(user["employees"]["233"]) + "/"+str(user["employees"]["233"]["max"]+")"+
+            "**Sous Chef**  (" + str(user["employees"]["233"]) + "/"+str(user["employees"]["233"]["max"])+")"+
             "\nCost: $" + str(self.costcalc(employees["233"]["price"], user["employees"]["233"])) + 
             "\nBoost: +$"+str(employees["233"]["boost"])+"/hr \nID: 233\n\n"+
             
-            "**Head Chef**  (" + str(user["employees"]["234"]) + "/"+str(user["employees"]["234"]["max"]+")"+
+            "**Head Chef**  (" + str(user["employees"]["234"]) + "/"+str(user["employees"]["234"]["max"])+")"+
             "\nCost: $" + str(self.costcalc(employees["234"]["price"], user["employees"]["234"])) + 
             "\nBoost: +$"+str(employees["234"]["boost"])+"/hr \nID: 234\n\n"+
             
-            "**Executive Chef**  (" + str(user["employees"]["235"]) + "/"+str(user["employees"]["235"]["max"]+")"+
+            "**Executive Chef**  (" + str(user["employees"]["235"]) + "/"+str(user["employees"]["235"]["max"])+")"+
             "\nCost: $" + str(self.costcalc(employees["235"]["price"], user["employees"]["235"])) + 
             "\nBoost: +$"+str(employees["235"]["boost"])+"/hr \nID: 235\n\n"+
             
-            "**Advertiser**  (" + str(user["employees"]["236"]) + "/"+str(user["employees"]["236"]["max"]+")"+
+            "**Advertiser**  (" + str(user["employees"]["236"]) + "/"+str(user["employees"]["236"]["max"])+")"+
             "\nCost: $" + str(self.costcalc(employees["236"]["price"], user["employees"]["236"])) + 
             "\nBoost: +$"+str(employees["236"]["boost"])+"/hr \nID: 236\n\n"+
             
-            "**Greeter**  (" + str(user["employees"]["237"]) + "/"+str(user["employees"]["237"]["max"]+")"+
+            "**Greeter**  (" + str(user["employees"]["237"]) + "/"+str(user["employees"]["237"]["max"])+")"+
             "\nCost: $" + str(self.costcalc(employees["237"]["price"], user["employees"]["237"])) + 
             "\nBoost: +$"+str(employees["237"]["boost"])+"/hr \nID: 237\n\n"+
             "Use **hire [ID]** to hire a(n) employee!\n"+
