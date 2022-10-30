@@ -301,6 +301,7 @@ class TacoShack(commands.Cog):
         embed.add_field(name="shack/myshack", value="View info about your shack", inline=False)
         embed.add_field(name="deposit", value="Deposit from bank to shack balance", inline=False)
         embed.add_field(name="withdraw", value="Withdraw from shack to bank balance", inline=False)
+        embed.add_field(name="shack leaderboard", value="View leaderboard", inline=False)
         embed.add_field(name="shack [user]", value="View info about a users shack", inline=False)
         embed.add_field(name="upgrades", value="View all upgrades for your taco shack", inline=False)
         embed.add_field(name="buy [id]", value="Purchase an upgrade", inline=False)
