@@ -9,9 +9,14 @@ import shutil
 import aiohttp
 import re
 import time
+import datetime
+import math
 
 from redbot.core import Config, commands, data_manager, checks, bank
 from redbot.core.data_manager import bundled_data_path, cog_data_path
+from redbot.core.utils.chat_formatting import humanize_list, humanize_number, pagify, box
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+
 
 log = logging.getLogger("red.jmes-cogs.Obfuscator")
 
@@ -30,13 +35,21 @@ class Obfuscator(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=2331337138)
         default_global = {
-            "watermark": "",        
+            "watermark": "",      
         }
         default_user = {
             "is_whitelisted": False,
+            "ironbrew": 0,
+            "menprotect": 0,
+            "bytecode": 0,
+            "luaseel": 0,
+            "prometheus": 0,
+            "total": 0,
         }
         default_guild = {
+            "watermark": "", 
             "channels": [],
+            "users": [],
             "cost": 0,
         }           
         self.config.register_global(**default_global)
@@ -69,12 +82,14 @@ class Obfuscator(commands.Cog):
         """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
-            filename = ''.join(random.choice(letters) for i in range(7))
+            filename = "".join(random.choice(letters) for i in range(7))
             x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
             obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
             watermark = await self.config.watermark()
             start_time = time.time()
+            count = await self.config.user(ctx.author).luaseel()
+            total = await self.config.user(ctx.author).total()           
             if x:
                 path = upload
                 if os.path.exists(path):
@@ -86,7 +101,7 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -97,11 +112,13 @@ class Obfuscator(commands.Cog):
                 end_time = time.time()
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
-                await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).luaseel.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)             
             elif ctx.message.attachments:
-                if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                     ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
@@ -119,7 +136,7 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -131,6 +148,8 @@ class Obfuscator(commands.Cog):
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).luaseel.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)
             else:
@@ -144,19 +163,21 @@ class Obfuscator(commands.Cog):
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)        
             new_balance = balance - cost
+            count = await self.config.user(ctx.author).luaseel()
+            total = await self.config.user(ctx.author).total()            
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
             if not await bank.can_spend(ctx.author, cost):
-                await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
+                await ctx.send(("You don't have enough {} ({}). Obfuscator cost: {} {}.").format(currency,balance,cost,currency))
                 return     
             if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():
                 letters = string.ascii_uppercase
-                filename = ''.join(random.choice(letters) for i in range(7))
+                filename = "".join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
                 obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
                 upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
-                watermark = await self.config.watermark()
+                watermark = await self.config.guild(ctx.guild).watermark()
                 start_time = time.time()
                 if x:
                     path = upload
@@ -169,23 +190,25 @@ class Obfuscator(commands.Cog):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed)
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))         
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))         
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
-                    await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                    await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).luaseel.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)             
                 elif ctx.message.attachments:
-                    if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                         ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
@@ -203,19 +226,21 @@ class Obfuscator(commands.Cog):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed)
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))  
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).luaseel.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
                 else:
@@ -230,14 +255,16 @@ class Obfuscator(commands.Cog):
         """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
-            filename = ''.join(random.choice(letters) for i in range(7))
+            filename = "".join(random.choice(letters) for i in range(7))
             x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
             output_file = "{}/{}/{}".format(file_path, "obfuscated", "output.lua")
             obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
             upload = "{}/{}/{}".format(file_path, "uploads", "input.lua")
             watermark = await self.config.watermark()
             node_folder = "{}/{}".format(file_path, "node_modules")        
-            start_time = time.time()            
+            start_time = time.time()
+            count = await self.config.user(ctx.author).menprotect()
+            total = await self.config.user(ctx.author).total()            
             if x:
                 if os.path.exists(upload):
                     os.remove(upload)
@@ -251,11 +278,11 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)                
-                with open(output_file, 'r') as file:
+                with open(output_file, "r") as file:
                     filedata = file.read()
-                with open(obfuscated, 'w') as file:
+                with open(obfuscated, "w") as file:
                     file.write(filedata)
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -266,12 +293,14 @@ class Obfuscator(commands.Cog):
                 end_time = time.time()
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
-                await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).menprotect.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)
                 os.remove(output_file)
             elif ctx.message.attachments:
-                if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                     ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
@@ -290,11 +319,11 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)                
-                with open(f"{file_path}//obfuscated//output.lua", 'r') as file:
+                with open(f"{file_path}//obfuscated//output.lua", "r") as file:
                     filedata = file.read()
-                with open(obfuscated, 'w') as file:
+                with open(obfuscated, "w") as file:
                     file.write(filedata)
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -306,6 +335,8 @@ class Obfuscator(commands.Cog):
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).menprotect.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)
                 os.remove(output_file)                
@@ -319,21 +350,23 @@ class Obfuscator(commands.Cog):
             cost = await self.config.guild(ctx.guild).cost()
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
-            new_balance = balance - cost   
+            new_balance = balance - cost
+            count = await self.config.user(ctx.author).menprotect()
+            total = await self.config.user(ctx.author).total()           
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
             if not await bank.can_spend(ctx.author, cost):
-                await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
+                await ctx.send(("You don't have enough {} ({}). Obfuscator cost: {} {}.").format(currency,balance,cost,currency))
                 return    
             if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():                 
                 letters = string.ascii_uppercase
-                filename = ''.join(random.choice(letters) for i in range(7))
+                filename = "".join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
                 output_file = "{}/{}/{}".format(file_path, "obfuscated", "output.lua")
                 obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
                 upload = "{}/{}/{}".format(file_path, "uploads", "input.lua")
-                watermark = await self.config.watermark()
+                watermark = await self.config.guild(ctx.guild).watermark()
                 node_folder = "{}/{}".format(file_path, "node_modules")        
                 start_time = time.time()                
                 if x:
@@ -349,28 +382,30 @@ class Obfuscator(commands.Cog):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed)                    
-                    with open(output_file, 'r') as file:
+                    with open(output_file, "r") as file:
                         filedata = file.read()
-                    with open(obfuscated, 'w') as file:
+                    with open(obfuscated, "w") as file:
                         file.write(filedata)
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))   
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))   
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
-                    await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                    await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).menprotect.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
                     os.remove(output_file)
                 elif ctx.message.attachments:
-                    if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                         ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
@@ -389,23 +424,25 @@ class Obfuscator(commands.Cog):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed)                    
-                    with open(output_file, 'r') as file:
+                    with open(output_file, "r") as file:
                         filedata = file.read()
-                    with open(obfuscated, 'w') as file:
+                    with open(obfuscated, "w") as file:
                         file.write(filedata)
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))    
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))    
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).menprotect.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
                     os.remove(output_file)                
@@ -421,55 +458,26 @@ class Obfuscator(commands.Cog):
         """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
-            filename = ''.join(random.choice(letters) for i in range(7))
+            filename = "".join(random.choice(letters) for i in range(7))
             x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
             obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
             path = "{}/{}".format("./uploads", filename + ".lua")
             watermark = await self.config.watermark()
-            start_time = time.time()            
+            start_time = time.time() 
+            count = await self.config.user(ctx.author).prometheus()
+            total = await self.config.user(ctx.author).total()
             if x:
                 if os.path.exists(upload):
                     os.remove(upload)
                 with open(upload, "w") as file:
                     file.write(x[0])
-                subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
+                subprocess.check_output(f"cd {file_path} && lua prometheus_cli.lua --preset Medium {path}",shell=True,stderr=subprocess.STDOUT)
                 if not os.path.exists(obfuscated):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)                
-                with open(obfuscated, 'r+') as fp:
-                    lines = fp.readlines()
-                    if watermark:
-                        lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
-                    else:
-                        lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
-                    fp.seek(0)
-                    fp.writelines(lines)
-                end_time = time.time()
-                time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
-                await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
-                os.remove(upload)
-                os.remove(obfuscated)
-            elif ctx.message.attachments:
-                if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
-                    ctx.command.reset_cooldown(ctx)
-                    embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
-                    return await ctx.send(embed=embed)
-                url = ctx.message.attachments[0].url
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(url) as resp:
-                        response = await resp.text(encoding="utf8")      
-                if os.path.exists(upload):
-                    os.remove(upload)
-                open(upload, "w", encoding="utf8").write(response)
-                subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
-                if not os.path.exists(obfuscated):
-                    ctx.command.reset_cooldown(ctx)
-                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
-                    return await ctx.send(embed=embed)                
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -481,6 +489,41 @@ class Obfuscator(commands.Cog):
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).prometheus.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
+                os.remove(upload)
+                os.remove(obfuscated)
+            elif ctx.message.attachments:
+                if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
+                    ctx.command.reset_cooldown(ctx)
+                    embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
+                    return await ctx.send(embed=embed)
+                url = ctx.message.attachments[0].url
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url) as resp:
+                        response = await resp.text(encoding="utf8")      
+                if os.path.exists(upload):
+                    os.remove(upload)
+                open(upload, "w", encoding="utf8").write(response)
+                subprocess.check_output(f"cd {file_path} && lua prometheus_cli.lua --preset Medium {path}",shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)                
+                with open(obfuscated, "r+") as fp:
+                    lines = fp.readlines()
+                    if watermark:
+                        lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                    else:
+                        lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                    fp.seek(0)
+                    fp.writelines(lines)
+                end_time = time.time()
+                time_elapsed = end_time - start_time
+                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).prometheus.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)              
             else:
@@ -493,49 +536,53 @@ class Obfuscator(commands.Cog):
             cost = await self.config.guild(ctx.guild).cost()
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
-            new_balance = balance - cost            
+            new_balance = balance - cost
+            count = await self.config.user(ctx.author).prometheus()
+            total = await self.config.user(ctx.author).total()
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance                
             if not await bank.can_spend(ctx.author, cost):
-                await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
+                await ctx.send(("You don't have enough {} ({}). Obfuscator cost: {} {}.").format(currency,balance,cost,currency))
                 return        
             if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():                 
                 letters = string.ascii_uppercase
-                filename = ''.join(random.choice(letters) for i in range(7))
+                filename = "".join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
                 obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
                 upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
                 path = "{}/{}".format("./uploads", filename + ".lua")
-                watermark = await self.config.watermark()
+                watermark = await self.config.guild(ctx.guild).watermark()
                 start_time = time.time()                
                 if x:
                     if os.path.exists(upload):
                         os.remove(upload)
                     with open(upload, "w") as file:
                         file.write(x[0])
-                    subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
+                    subprocess.check_output(f"cd {file_path} && lua prometheus_cli.lua --preset Medium {path}",shell=True,stderr=subprocess.STDOUT)
                     if not os.path.exists(obfuscated):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed)
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))  
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
-                    await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                    await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).prometheus.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
                 elif ctx.message.attachments:
-                    if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                         ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
@@ -546,24 +593,26 @@ class Obfuscator(commands.Cog):
                     if os.path.exists(upload):
                         os.remove(upload)
                     open(upload, "w", encoding="utf8").write(response)
-                    subprocess.check_output(f'cd {file_path} && lua prometheus_cli.lua --preset Medium {path}',shell=True,stderr=subprocess.STDOUT)
+                    subprocess.check_output(f"cd {file_path} && lua prometheus_cli.lua --preset Medium {path}",shell=True,stderr=subprocess.STDOUT)
                     if not os.path.exists(obfuscated):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed) 
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))  
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).prometheus.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)              
                 else:
@@ -578,14 +627,16 @@ class Obfuscator(commands.Cog):
         """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
-            filename = ''.join(random.choice(letters) for i in range(7))
+            filename = "".join(random.choice(letters) for i in range(7))
             x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
             output_file = "{}/{}/{}".format(file_path, "obfuscated", "output.lua")
             obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
-            watermark = await self.config.watermark()
+            watermark = await self.config.guild(ctx.guild).watermark()
             path = "{}/{}".format("./uploads", filename + ".lua")
-            start_time = time.time()            
+            start_time = time.time()
+            count = await self.config.user(ctx.author).ironbrew()
+            total = await self.config.user(ctx.author).total()
             if x:
                 if os.path.exists(upload):
                     os.remove(upload)
@@ -596,11 +647,11 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)                
-                with open(output_file, 'r') as file:
+                with open(output_file, "r") as file:
                     filedata = file.read()
-                with open(obfuscated, 'w') as file:
+                with open(obfuscated, "w") as file:
                     file.write(filedata)
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -611,12 +662,14 @@ class Obfuscator(commands.Cog):
                 end_time = time.time()
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
-                await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).ironbrew.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)
                 os.remove(output_file)  
             elif ctx.message.attachments:
-                if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                     ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
@@ -632,11 +685,11 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)
-                with open(output_file, 'r') as file:
+                with open(output_file, "r") as file:
                     filedata = file.read()
-                with open(obfuscated, 'w') as file:
+                with open(obfuscated, "w") as file:
                     file.write(filedata)
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -648,6 +701,8 @@ class Obfuscator(commands.Cog):
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).ironbrew.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)
                 os.remove(output_file)
@@ -662,20 +717,22 @@ class Obfuscator(commands.Cog):
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
             new_balance = balance - cost
+            count = await self.config.user(ctx.author).ironbrew()
+            total = await self.config.user(ctx.author).total()
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
             if not await bank.can_spend(ctx.author, cost):
-                await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
+                await ctx.send(("You don't have enough {} ({}). Obfuscator cost: {} {}.").format(currency,balance,cost,currency))
                 return                
             if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():        
                 letters = string.ascii_uppercase
-                filename = ''.join(random.choice(letters) for i in range(7))
+                filename = "".join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
                 output_file = "{}/{}/{}".format(file_path, "obfuscated", "output.lua")
                 obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
                 upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
-                watermark = await self.config.watermark()
+                watermark = await self.config.guild(ctx.guild).watermark()
                 path = "{}/{}".format("./uploads", filename + ".lua")
                 start_time = time.time()
                 if x:
@@ -688,28 +745,30 @@ class Obfuscator(commands.Cog):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed)                    
-                    with open(output_file, 'r') as file:
+                    with open(output_file, "r") as file:
                         filedata = file.read()
-                    with open(obfuscated, 'w') as file:
+                    with open(obfuscated, "w") as file:
                         file.write(filedata)
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))  
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
-                    await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                    await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance) 
+                    await self.config.user(ctx.author).ironbrew.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
                     os.remove(output_file)
                 elif ctx.message.attachments:
-                    if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                         ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
@@ -725,23 +784,25 @@ class Obfuscator(commands.Cog):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed)
-                    with open(output_file, 'r') as file:
+                    with open(output_file, "r") as file:
                         filedata = file.read()
-                    with open(obfuscated, 'w') as file:
+                    with open(obfuscated, "w") as file:
                         file.write(filedata)
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))  
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
-                    await bank.set_balance(ctx.author, new_balance) 
+                    await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).ironbrew.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
                     os.remove(output_file)
@@ -757,55 +818,26 @@ class Obfuscator(commands.Cog):
         """     
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
-            filename = ''.join(random.choice(letters) for i in range(7))
+            filename = "".join(random.choice(letters) for i in range(7))
             x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
             obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
             watermark = await self.config.watermark()
             path = "./uploads/" + filename + ".lua"
-            start_time = time.time()        
+            start_time = time.time()
+            count = await self.config.user(ctx.author).bytecode()
+            total = await self.config.user(ctx.author).total()
             if x:
                 if os.path.exists(upload):
                     os.remove(upload)
                 with open(upload, "w") as file:
                     file.write(x[0])
-                subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
+                subprocess.check_output(f"cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}",shell=True,stderr=subprocess.STDOUT)
                 if not os.path.exists(obfuscated):
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                     return await ctx.send(embed=embed)                
-                with open(obfuscated, 'r+') as fp:
-                    lines = fp.readlines()
-                    if watermark:
-                        lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
-                    else:
-                        lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
-                    fp.seek(0)
-                    fp.writelines(lines)
-                end_time = time.time()
-                time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
-                await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
-                os.remove(upload)
-                os.remove(obfuscated)
-            elif ctx.message.attachments:
-                if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
-                    ctx.command.reset_cooldown(ctx)
-                    embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
-                    return await ctx.send(embed=embed)
-                url = ctx.message.attachments[0].url
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(url) as resp:
-                        response = await resp.text(encoding="utf8")      
-                if os.path.exists(upload):
-                    os.remove(upload)
-                open(upload, "w", encoding="utf8").write(response)
-                subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
-                if not os.path.exists(obfuscated):
-                    ctx.command.reset_cooldown(ctx)
-                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
-                    return await ctx.send(embed=embed) 
-                with open(obfuscated, 'r+') as fp:
+                with open(obfuscated, "r+") as fp:
                     lines = fp.readlines()
                     if watermark:
                         lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
@@ -817,6 +849,41 @@ class Obfuscator(commands.Cog):
                 time_elapsed = end_time - start_time
                 embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).bytecode.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
+                os.remove(upload)
+                os.remove(obfuscated)
+            elif ctx.message.attachments:
+                if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
+                    ctx.command.reset_cooldown(ctx)
+                    embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
+                    return await ctx.send(embed=embed)
+                url = ctx.message.attachments[0].url
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url) as resp:
+                        response = await resp.text(encoding="utf8")      
+                if os.path.exists(upload):
+                    os.remove(upload)
+                open(upload, "w", encoding="utf8").write(response)
+                subprocess.check_output(f"cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}",shell=True,stderr=subprocess.STDOUT)
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed) 
+                with open(obfuscated, "r+") as fp:
+                    lines = fp.readlines()
+                    if watermark:
+                        lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                    else:
+                        lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                    fp.seek(0)
+                    fp.writelines(lines)
+                end_time = time.time()
+                time_elapsed = end_time - start_time
+                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).bytecode.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)              
             else:
@@ -830,19 +897,21 @@ class Obfuscator(commands.Cog):
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)
             new_balance = balance - cost
+            count = await self.config.user(ctx.author).bytecode()
+            total = await self.config.user(ctx.author).total()
             if await self.config.user(ctx.author).is_whitelisted():
                 cost = 0
                 new_balance = balance
             if not await bank.can_spend(ctx.author, cost):
-                await ctx.send(("You don't have enough {} ({}). Obfuscator costs {} {}.").format(currency,balance,cost,currency))
+                await ctx.send(("You don't have enough {} ({}). Obfuscator cost: {} {}.").format(currency,balance,cost,currency))
                 return                
             if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():                
                 letters = string.ascii_uppercase
-                filename = ''.join(random.choice(letters) for i in range(7))
+                filename = "".join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
                 obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
                 upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
-                watermark = await self.config.watermark()
+                watermark = await self.config.guild(ctx.guild).watermark()
                 path = "./uploads/" + filename + ".lua"
                 start_time = time.time()        
                 if x:
@@ -850,28 +919,30 @@ class Obfuscator(commands.Cog):
                         os.remove(upload)
                     with open(upload, "w") as file:
                         file.write(x[0])
-                    subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
+                    subprocess.check_output(f"cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}",shell=True,stderr=subprocess.STDOUT)
                     if not os.path.exists(obfuscated):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed) 
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))  
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
-                    await ctx.message.channel.send(embed=embed, file=discord.File(obfuscated))
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                    await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).bytecode.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
                 elif ctx.message.attachments:
-                    if not ctx.message.attachments[0].url.endswith(('.lua', '.txt')):
+                    if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
                         ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
@@ -882,24 +953,26 @@ class Obfuscator(commands.Cog):
                     if os.path.exists(upload):
                         os.remove(upload)
                     open(upload, "w", encoding="utf8").write(response)
-                    subprocess.check_output(f'cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}',shell=True,stderr=subprocess.STDOUT)
+                    subprocess.check_output(f"cd {file_path} && lua bytecode_cli.lua --cli --source {path} --output {obfuscated} --comment {ctx.message.author.display_name} --varcomment {ctx.message.author.display_name} --cryptvarcomm True --varname {ctx.message.author.display_name}",shell=True,stderr=subprocess.STDOUT)
                     if not os.path.exists(obfuscated):
                         ctx.command.reset_cooldown(ctx)
                         embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
                         return await ctx.send(embed=embed) 
-                    with open(obfuscated, 'r+') as fp:
+                    with open(obfuscated, "r+") as fp:
                         lines = fp.readlines()
                         if watermark:
-                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(self.bot.user.name,watermark))
+                            lines.insert(0, ("--// Obfuscated by {} - {}\n\n").format(ctx.guild.name,watermark))
                         else:
-                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(self.bot.user.name))  
+                            lines.insert(0, ("--// Obfuscated by {}\n\n").format(ctx.guild.name))  
                         fp.seek(0)
                         fp.writelines(lines)
                     end_time = time.time()
                     time_elapsed = end_time - start_time
-                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\nYou have {} {} remaining.").format(str(time_elapsed)[:5],new_balance,currency), color=0x000088)
+                    embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).bytecode.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)              
                 else:
@@ -907,7 +980,7 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)
      
-    @commands.group()
+    @commands.group(name="obfuscatorset", aliases=["obfuscateset"])
     async def obfuscatorset(self, ctx: commands.Context) -> None:
         """
         Obfuscator settings.
@@ -917,8 +990,11 @@ class Obfuscator(commands.Cog):
     @checks.is_owner()
     @commands.guild_only()
     @obfuscatorset.command(name="channel")
-    async def obfuscation_channel(self, ctx: commands.Context, *, channel: discord.TextChannel):
+    async def obfuscation_channel(self, ctx: commands.Context, channel: Optional[discord.TextChannel] = None) -> None:
         """Set the channels for obfuscator."""
+        if channel is None:
+            channel = ctx.channel
+        
         if channel.id in await self.config.guild(ctx.guild).channels():
             async with self.config.guild(ctx.guild).channels() as data:
                 data.remove(channel.id)
@@ -942,23 +1018,47 @@ class Obfuscator(commands.Cog):
     @obfuscatorset.command(name="user")
     async def obfuscation_user(self, ctx: commands.Context, *, user: discord.Member):
         """add/remove user from direct message obfuscation."""
-        if await self.config.user(user).is_whitelisted():
+        if await self.config.user(user).is_whitelisted() or user in await self.config.guild(ctx.guild).users():
+            async with self.config.guild(ctx.guild).users() as data:
+                if user.id in data:
+                    data.remove(user.id)
+                pass
             await self.config.user(user).is_whitelisted.set(False)
             await ctx.send(("{} removed from obfuscator whitelist.").format(user.mention))
         else:
+            async with self.config.guild(ctx.guild).users() as data:
+                data.append(user.id)
             await self.config.user(user).is_whitelisted.set(True)
             await ctx.send(("{} added to obfuscator whitelist.").format(user.mention))
+            
+    @checks.is_owner()
+    @obfuscatorset.group(name="watermark")
+    async def watermark(self, ctx: commands.Context) -> None:
+        """
+        Obfuscator watermark settings.
+        """
+        pass
 
     @checks.is_owner()
-    @commands.guild_only()
-    @obfuscatorset.command(name="watermark")
-    async def obfuscation_watermark(self, ctx: commands.context, *, value: Optional[str] = None) -> None:
-        """Set the watermark for obfuscator."""
+    @watermark.command(name="global")
+    async def global_watermark(self, ctx: commands.context, *, value: Optional[str] = None) -> None:
+        """Set the global watermark for obfuscator."""
         if value is None:
-            await ctx.send(("Obfuscator watermark reset."))
+            await ctx.send(("Obfuscator global watermark reset."))
             return await self.config.watermark.clear()
         await self.config.watermark.set(value)
-        await ctx.send(("Obfuscator watermark: {}").format(value))
+        await ctx.send(("Obfuscator global watermark: {}").format(value))
+        
+    @checks.is_owner()
+    @commands.guild_only()
+    @watermark.command(name="guild")
+    async def guild_watermark(self, ctx: commands.context, *, value: Optional[str] = None) -> None:
+        """Set the guild watermark for obfuscator."""
+        if value is None:
+            await ctx.send(("Obfuscator guild watermark reset."))
+            return await self.config.guild(ctx.guild).watermark.clear()
+        await self.config.guild(ctx.guild).watermark.set(value)
+        await ctx.send(("Obfuscator guild watermark: {}").format(value))
             
     @obfuscatorset.command(name="version", aliases=["about"])
     async def obfuscation_version(self, ctx: commands.Context):
@@ -980,7 +1080,156 @@ class Obfuscator(commands.Cog):
         embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
         embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
         await ctx.send(embed=embed)
-                                    
+        
+    @obfuscate.command(name="stats", aliases=["view"])
+    async def _stats(self, ctx: commands.Context, *, user: Optional[discord.Member]) -> None:
+        """View user stats"""
+        if not user:
+
+            ironbrew = await self.config.user(ctx.author).ironbrew()
+            luaseel = await self.config.user(ctx.author).luaseel()
+            menprotect = await self.config.user(ctx.author).menprotect()
+            prometheus = await self.config.user(ctx.author).prometheus()
+            bytecode = await self.config.user(ctx.author).bytecode()
+            whitelisted = await self.config.user(ctx.author).is_whitelisted()
+            total = ironbrew + luaseel + menprotect + prometheus + bytecode
+            if total == 0:
+                return await ctx.send("You have no stats.")
+            embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(ctx.author.display_name), colour=0x000088)
+            embed.set_thumbnail(url=ctx.author.avatar_url)
+            embed.add_field(name="IronBrew", value=str(ironbrew), inline=True)
+            embed.add_field(name="Menprotect", value=str(menprotect), inline=True)
+            embed.add_field(name="LuaSeel", value=str(luaseel), inline=True)
+            embed.add_field(name="ByteCode", value=str(bytecode), inline=True)
+            embed.add_field(name="Prometheus", value=str(prometheus), inline=True)
+            if whitelisted is True:
+                embed.add_field(name="Whitelisted?", value="✅", inline=True)
+            else:
+                embed.add_field(name="Whitelisted?", value="❌", inline=True) 
+            embed.add_field(name="Total Files Obfuscated", value=str(total), inline=False) 
+            await ctx.send(embed=embed)
+        else:
+            
+            ironbrew = await self.config.user(user).ironbrew()
+            luaseel = await self.config.user(user).luaseel()
+            menprotect = await self.config.user(user).menprotect()
+            prometheus = await self.config.user(user).prometheus()
+            bytecode = await self.config.user(user).bytecode()
+            whitelisted = await self.config.user(user).is_whitelisted()
+            total = ironbrew + luaseel + menprotect + prometheus + bytecode
+            if total == 0:
+                return await ctx.send("No stats for that user.")                
+            embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(user.display_name), colour=0x000088)
+            embed.set_thumbnail(url=user.avatar_url)
+
+            embed.add_field(name="IronBrew", value=str(ironbrew), inline=True)
+            embed.add_field(name="Menprotect", value=str(menprotect), inline=True)
+            embed.add_field(name="LuaSeel", value=str(luaseel), inline=True)
+            embed.add_field(name="ByteCode", value=str(bytecode), inline=True)
+            embed.add_field(name="Prometheus", value=str(prometheus), inline=True)
+            if whitelisted is True:
+                embed.add_field(name="Whitelisted?", value="✅", inline=True)
+            else:
+                embed.add_field(name="Whitelisted?", value="❌", inline=True)   
+            embed.add_field(name="Total Files Obfuscated", value=str(total), inline=False)                
+            await ctx.send(embed=embed)
+            
+    @obfuscate.command(name="leaderboard")
+    @commands.guild_only()
+    async def leaderboard(self, ctx):
+        """Show the Obfuscator leaderboard."""
+        userinfo = await self.config._all_from_scope(scope="USER")
+        if not userinfo:
+            return await ctx.reply("No one has obfuscated any files.")
+        async with ctx.typing():
+            sorted_acc = sorted(userinfo.items(), key=lambda x: x[1]["total"], reverse=True)
+        # Leaderboard logic from https://github.com/Cog-Creators/Red-DiscordBot/blob/V3/develop/redbot/cogs/economy/economy.py#L445
+        pound_len = len(str(len(sorted_acc)))
+        total_len = 10
+        header = "{pound:{pound_len}}{total:{total_len}}{name:2}\n".format(
+            pound="#",
+            pound_len=pound_len + 3,
+            total="Files",
+            total_len=total_len + 6,
+            name="\N{THIN SPACE}" + "Name"
+            if not str(ctx.author.mobile_status) in ["online", "idle", "dnd"]
+            else "Name",
+        )
+        temp_msg = header
+        for pos, account in enumerate(sorted_acc):
+            if account[1]["total"] == 0:
+                continue
+            user_obj = await self.bot.fetch_user(account[0])
+            _user_name = discord.utils.escape_markdown(user_obj.name)
+            user_name = f"{_user_name}#{user_obj.discriminator}"
+            if len(user_name) > 28:
+                user_name = f"{_user_name[:19]}...#{user_obj.discriminator}"
+            user_idx = pos + 1
+            if user_obj == ctx.author:
+                temp_msg += (
+                    f"{f'{user_idx}.': <{pound_len + 2}} "
+                    f"{humanize_number(account[1]['total']) + '   ': <{total_len + 4}} <<{user_name}>>\n"
+                )
+            else:
+                temp_msg += (
+                    f"{f'{user_idx}.': <{pound_len + 2}} "
+                    f"{humanize_number(account[1]['total']) + '   ': <{total_len + 4}} {user_name}\n"
+                )
+
+        page_list = []
+        pages = 1
+        for page in pagify(temp_msg, delims=["\n"], page_length=1000):
+            embed = discord.Embed(
+                colour=0x000088,
+                description=box(f"Obfuscator Leaderboard", lang="prolog") + (box(page, lang="md")),
+            )
+            embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+            embed.set_footer(text=f"Page {humanize_number(pages)}/{humanize_number(math.ceil(len(temp_msg) / 1500))}", icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+            pages += 1
+            page_list.append(embed)
+        return await menu(ctx, page_list, DEFAULT_CONTROLS)
+            
+    @checks.is_owner()
+    @commands.guild_only()
+    @obfuscatorset.command(name="settings")            
+    async def obfuscatorset_settings(self, ctx: commands.Context):
+        """View current settings."""
+        data = await self.config.all()
+        guild_data = await self.config.guild(ctx.guild).all()
+        user_data = await self.config.all_users()
+        currency = await bank.get_currency_name(ctx.guild)
+        if not guild_data["channels"]:
+            channel_names = ["No channels set."]
+        else:
+            channel_names = []
+            for channel_id in guild_data["channels"]:
+                channel_obj = self.bot.get_channel(channel_id)
+                if channel_obj:
+                    channel_names.append("#"+channel_obj.name)
+        if not guild_data["users"]:
+            user_names = ["No users."]
+        else:
+            user_names = []
+            for user_id in guild_data["users"]:
+                user_obj = self.bot.get_user(user_id)
+                if user_obj:
+                    user_names.append(user_obj.mention)
+                          
+        watermark = guild_data["watermark"]     
+        cost = guild_data["cost"]
+        channels = humanize_list(channel_names)
+        users = humanize_list(user_names)
+
+        embed = discord.Embed(colour=0x000088)
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed.title = "**__Obfuscator settings:__**"
+        if watermark:
+            embed.add_field(name="Watermark:", value=str(watermark), inline=False)
+        embed.add_field(name="Cost:", value=("{} {}").format(str(cost),currency), inline=False)
+        embed.add_field(name="Channels:", value="\n".join(channel_names))
+        embed.add_field(name="Whitelist:", value="\n".join(user_names))
+        await ctx.send(embed=embed)            
+        
     def obfuscation_luaseel(self, path, filename):
         obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
         copy = "{}/{}/{}".format(file_path, "obfuscated", filename + ".lua")
@@ -1002,9 +1251,9 @@ class Obfuscator(commands.Cog):
         with open(copy, "w") as out_file:
             for line in buf:
                 if line == "--SCRIPT\n":
-                    line = line + originalupload_data + '\n'
+                    line = line + originalupload_data + "\n"
                 out_file.write(line)
-        output = subprocess.getoutput(f'lua {copy}')
+        output = subprocess.getoutput(f"lua {copy}")
         if os.path.exists(obfuscated):
             os.remove(obfuscated)
         f = open(obfuscated, "a")
