@@ -124,7 +124,6 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                     return await ctx.send(embed=embed)
-                    
                 url = ctx.message.attachments[0].url
                 async with aiohttp.ClientSession() as session:
                     async with session.get(url) as resp:
@@ -217,7 +216,6 @@ class Obfuscator(commands.Cog):
                         ctx.command.reset_cooldown(ctx)
                         embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
                         return await ctx.send(embed=embed)
-                        
                     url = ctx.message.attachments[0].url
                     async with aiohttp.ClientSession() as session:
                         async with session.get(url) as resp:
@@ -330,8 +328,7 @@ class Obfuscator(commands.Cog):
                     log.error(f"{err}")
                     ctx.command.reset_cooldown(ctx)
                     embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
-                    return await ctx.send(embed=embed) 
-                    
+                    return await ctx.send(embed=embed)
                 with open(output_file, "r") as file:
                     filedata = file.read()
                 with open(obfuscated, "w") as file:
