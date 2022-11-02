@@ -6,9 +6,7 @@ jmes cogs for Red-DiscordBot
 [p]repo add jmes-cogs https://github.com/jmesfo0/jmes-cogs
 [p]cog install jmes-cogs pexels
 [p]cog install jmes-cogs obfuscator
-[p]cog install jmes-cogs wordnik
 [p]cog install jmes-cogs tacoshack
-[p]cog install jmes-cogs whalealerts
 ```
 [p] = Your bot's prefix
 
