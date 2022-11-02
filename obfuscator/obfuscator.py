@@ -1723,9 +1723,9 @@ class Obfuscator(commands.Cog):
             menprotect = await self.config.user(user).menprotect()
             prometheus = await self.config.user(user).prometheus()
             bytecode = await self.config.user(user).bytecode()
-            minify = await self.config.user(ctx.author).minify()
-            beautify = await self.config.user(ctx.author).beautify()
-            xor = await self.config.user(ctx.author).xor()
+            minify = await self.config.user(user).minify()
+            beautify = await self.config.user(user).beautify()
+            xor = await self.config.user(user).xor()
             whitelisted = await self.config.user(user).is_whitelisted()
             total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify + beautify
             if total == 0:
