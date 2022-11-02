@@ -3183,12 +3183,12 @@ end
 
 local function usageError()
 	error(
-			"\nusage: minify <file> or unminify <file>\n" ..
+			"\nusage: minify <file> or beautify <file>\n" ..
 			"  The modified code will be printed to the stdout, pipe it to a file, the\n" ..
 			"  lua interpreter, or something else as desired EG:\n\n" ..
 			"        lua minify.lua minify input.lua > output.lua\n\n" ..
 			"  * minify will minify the code in the file.\n" ..
-			"  * unminify will beautify the code and replace the variable names with easily\n" ..
+			"  * beautify will beautify the code and replace the variable names with easily\n" ..
 			"    find-replacable ones to aide in reverse engineering minified code.\n", 0)
 end
 
@@ -3220,7 +3220,7 @@ end
 
 if args[1] == 'minify' then
 	minify(ast, global_scope, root_scope)
-elseif args[1] == 'unminify' then
+elseif args[1] == 'beautify' then
 	beautify(ast, global_scope, root_scope)
 else
 	usageError()
