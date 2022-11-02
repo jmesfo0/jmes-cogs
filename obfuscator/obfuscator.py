@@ -1505,7 +1505,7 @@ class Obfuscator(commands.Cog):
         embed.add_field(name="obfuscate prometheus", value="Prometheus Obfuscator", inline=False)        
         embed.add_field(name="obfuscate ironbrew", value="IronBrew Obfuscator", inline=False)        
         embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
-        embed.add_field(name="obfuscate minify/unminify", value="Minify/Unminify", inline=False)
+        embed.add_field(name="obfuscate minify/unminify", value="Minifier", inline=False)
         embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
         await ctx.send(embed=embed)
         
