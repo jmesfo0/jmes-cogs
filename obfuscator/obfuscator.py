@@ -17,7 +17,6 @@ from redbot.core.data_manager import bundled_data_path, cog_data_path
 from redbot.core.utils.chat_formatting import humanize_list, humanize_number, pagify, box
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
-
 log = logging.getLogger("red.jmes-cogs.Obfuscator")
 
 file_path = os.path.abspath(os.path.dirname(__file__))
@@ -45,6 +44,7 @@ class Obfuscator(commands.Cog):
             "luaseel": 0,
             "prometheus": 0,
             "minify": 0,
+            "beautify": 0,
             "xor": 0,
             "total": 0,
         }
@@ -1408,20 +1408,20 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)
                     
-    @obfuscate.command(name="unminify")
-    async def _unminify(self, ctx: commands.Context):
+    @obfuscate.command(name="beautify")
+    async def _beautify(self, ctx: commands.Context):
         """
-        Unminify lua source code.
+        Beautify lua source code.
         """
         if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
             letters = string.ascii_uppercase
             filename = "".join(random.choice(letters) for i in range(7))
             x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
-            obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-unminified.lua")
+            obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-beautified.lua")
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
             minify = "{}/{}".format(file_path, "minify.lua")
             start_time = time.time()
-            count = await self.config.user(ctx.author).minify()
+            count = await self.config.user(ctx.author).beautify()
             total = await self.config.user(ctx.author).total()    
             
             if x:
@@ -1431,7 +1431,7 @@ class Obfuscator(commands.Cog):
                 with open(path, "w") as file:
                     file.write(x[0])
                 try:
-                    output = subprocess.getoutput(f"lua {minify} unminify {path} > {obfuscated}")
+                    output = subprocess.getoutput(f"lua {minify} beautify {path} > {obfuscated}")
                 except subprocess.CalledProcessError as err:
                     log.error(f"{err}")
                 if not os.path.exists(obfuscated):
@@ -1444,9 +1444,9 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File unminified", description=("\nFile unminified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
-                await self.config.user(ctx.author).minify.set(count + 1)
+                await self.config.user(ctx.author).beautify.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)             
@@ -1465,7 +1465,7 @@ class Obfuscator(commands.Cog):
                     os.remove(path)
                 open(path, "w").write(response)
                 try:
-                    output = subprocess.getoutput(f"lua {minify} unminify {path} > {obfuscated}")
+                    output = subprocess.getoutput(f"lua {minify} beautify {path} > {obfuscated}")
                 except subprocess.CalledProcessError as err:
                     log.error(f"{err}")
                 if not os.path.exists(obfuscated):
@@ -1478,9 +1478,9 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File unminified", description=("\nFile unminified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
-                await self.config.user(ctx.author).minify.set(count + 1)
+                await self.config.user(ctx.author).beautify.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
                 os.remove(upload)
                 os.remove(obfuscated)
@@ -1495,7 +1495,7 @@ class Obfuscator(commands.Cog):
             balance = await bank.get_balance(ctx.author)
             currency = await bank.get_currency_name(ctx.guild)        
             new_balance = balance - cost
-            count = await self.config.user(ctx.author).minify()
+            count = await self.config.user(ctx.author).beautify()
             total = await self.config.user(ctx.author).total()
             minify = "{}/{}".format(file_path, "minify.lua")
             if await self.config.user(ctx.author).is_whitelisted():
@@ -1508,7 +1508,7 @@ class Obfuscator(commands.Cog):
                 letters = string.ascii_uppercase
                 filename = "".join(random.choice(letters) for i in range(7))
                 x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
-                obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-unminified.lua")
+                obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-beautified.lua")
                 upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
                 start_time = time.time()
                 if x:
@@ -1518,7 +1518,7 @@ class Obfuscator(commands.Cog):
                     with open(path, "w") as file:
                         file.write(x[0])
                     try:
-                        output = subprocess.getoutput(f"lua {minify} unminify {path} > {obfuscated}")
+                        output = subprocess.getoutput(f"lua {minify} beautify {path} > {obfuscated}")
                     except subprocess.CalledProcessError as err:
                         log.error(f"{err}")
                     if not os.path.exists(obfuscated):
@@ -1532,12 +1532,12 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unminified", description=("\nFile unminified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unminified", description=("\nFile unminified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
-                    await self.config.user(ctx.author).minify.set(count + 1)
+                    await self.config.user(ctx.author).beautify.set(count + 1)
                     await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)             
@@ -1556,7 +1556,7 @@ class Obfuscator(commands.Cog):
                         os.remove(path)
                     open(path, "w").write(response)
                     try:
-                        output = subprocess.getoutput(f"lua {minify} unminify {path} > {obfuscated}")
+                        output = subprocess.getoutput(f"lua {minify} beautify {path} > {obfuscated}")
                     except subprocess.CalledProcessError as err:
                         log.error(f"{err}")
                     if not os.path.exists(obfuscated):
@@ -1570,12 +1570,12 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unminified", description=("\nFile unminified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unminified", description=("\nFile unminified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)                    
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)                    
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
-                    await self.config.user(ctx.author).minify.set(count + 1)
+                    await self.config.user(ctx.author).beautify.set(count + 1)
                     await self.config.user(ctx.author).total.set(total + 1)
                     os.remove(upload)
                     os.remove(obfuscated)
@@ -1682,7 +1682,8 @@ class Obfuscator(commands.Cog):
         embed.add_field(name="obfuscate prometheus", value="Prometheus Obfuscator", inline=False)        
         embed.add_field(name="obfuscate ironbrew", value="IronBrew Obfuscator", inline=False)        
         embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
-        embed.add_field(name="obfuscate minify/unminify", value="Minifier", inline=False)
+        embed.add_field(name="obfuscate minify", value="Minifier", inline=False)
+        embed.add_field(name="obfuscate beautify", value="Beautifier", inline=False)
         embed.add_field(name="obfuscate xor", value="XOR unpacker", inline=False)
         embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
         await ctx.send(embed=embed)
@@ -1697,9 +1698,10 @@ class Obfuscator(commands.Cog):
             prometheus = await self.config.user(ctx.author).prometheus()
             bytecode = await self.config.user(ctx.author).bytecode()
             minify = await self.config.user(ctx.author).minify()
+            beautify = await self.config.user(ctx.author).beautify()
             xor = await self.config.user(ctx.author).xor()
             whitelisted = await self.config.user(ctx.author).is_whitelisted()
-            total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify
+            total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify + beautify
             if total == 0:
                 return await ctx.send("You have no stats.")
             embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(ctx.author.display_name), colour=0x000088)
@@ -1710,12 +1712,13 @@ class Obfuscator(commands.Cog):
             embed.add_field(name="ByteCode", value=str(bytecode), inline=True)
             embed.add_field(name="Prometheus", value=str(prometheus), inline=True)
             embed.add_field(name="Minifier", value=str(minify), inline=True)
+            embed.add_field(name="Beautifier", value=str(beautify), inline=True)
             embed.add_field(name="XOR", value=str(xor), inline=True)
-            embed.add_field(name="Total Uses", value=str(total), inline=True)
             if whitelisted is True:
                 embed.add_field(name="Whitelisted?", value="✅", inline=True)
             else:
                 embed.add_field(name="Whitelisted?", value="❌", inline=True) 
+            embed.add_field(name="Total Uses", value=str(total), inline=True)
             await ctx.send(embed=embed)
         else:
             ironbrew = await self.config.user(user).ironbrew()
@@ -1724,9 +1727,10 @@ class Obfuscator(commands.Cog):
             prometheus = await self.config.user(user).prometheus()
             bytecode = await self.config.user(user).bytecode()
             minify = await self.config.user(ctx.author).minify()
+            beautify = await self.config.user(ctx.author).beautify()
             xor = await self.config.user(ctx.author).xor()
             whitelisted = await self.config.user(user).is_whitelisted()
-            total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify
+            total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify + beautify
             if total == 0:
                 return await ctx.send("No stats for that user.")                
             embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(user.display_name), colour=0x000088)
@@ -1737,12 +1741,13 @@ class Obfuscator(commands.Cog):
             embed.add_field(name="ByteCode", value=str(bytecode), inline=True)
             embed.add_field(name="Prometheus", value=str(prometheus), inline=True)
             embed.add_field(name="Minifier", value=str(minify), inline=True)
+            embed.add_field(name="Beautifier", value=str(beautify), inline=True)
             embed.add_field(name="XOR", value=str(xor), inline=True)
-            embed.add_field(name="Total Uses", value=str(total), inline=True)
             if whitelisted is True:
                 embed.add_field(name="Whitelisted?", value="✅", inline=True)
             else:
-                embed.add_field(name="Whitelisted?", value="❌", inline=True)   
+                embed.add_field(name="Whitelisted?", value="❌", inline=True) 
+            embed.add_field(name="Total Uses", value=str(total), inline=True)
             await ctx.send(embed=embed)
             
     @obfuscate.command(name="leaderboard")
