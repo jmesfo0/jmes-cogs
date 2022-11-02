@@ -17,6 +17,7 @@ from redbot.core.data_manager import bundled_data_path, cog_data_path
 from redbot.core.utils.chat_formatting import humanize_list, humanize_number, pagify, box
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
+
 log = logging.getLogger("red.jmes-cogs.Obfuscator")
 
 file_path = os.path.abspath(os.path.dirname(__file__))
@@ -27,7 +28,7 @@ class Obfuscator(commands.Cog):
     
     Various types of lua obfuscation to secure Roblox/FiveM scripts.
     """
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = "jmes"
 
     def __init__(self, bot):
@@ -44,6 +45,7 @@ class Obfuscator(commands.Cog):
             "luaseel": 0,
             "prometheus": 0,
             "minify": 0,
+            "xor": 0,
             "total": 0,
         }
         default_guild = {
@@ -1055,6 +1057,181 @@ class Obfuscator(commands.Cog):
                     ctx.command.reset_cooldown(ctx)
                     await ctx.send(embed=embed)
                     
+    @obfuscate.command(name="xor")
+    async def _xor(self, ctx: commands.Context):
+        """
+        XOR unpacker
+        """
+        if await self.config.user(ctx.author).is_whitelisted() and ctx.message.channel.type is discord.ChannelType.private:
+            letters = string.ascii_uppercase
+            filename = "".join(random.choice(letters) for i in range(7))
+            x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
+            obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-unpacked.lua")
+            upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
+            start_time = time.time()
+            count = await self.config.user(ctx.author).xor()
+            total = await self.config.user(ctx.author).total()    
+            
+            if x:
+                path = upload
+                if os.path.exists(path):
+                    os.remove(path)
+                with open(path, "w") as file:
+                    file.write(x[0])
+                try:
+                    subprocess.check_output(f"cd {file_path} && dotnet XOR.dll {path}",shell=True,stderr=subprocess.STDOUT)                    
+                except subprocess.CalledProcessError as err:
+                    log.error(f"{err}")
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)
+                with open(obfuscated, "r+") as fp:
+                    lines = fp.readlines()       
+                    fp.seek(0)
+                    fp.writelines(lines)
+                end_time = time.time()
+                time_elapsed = end_time - start_time
+                embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).xor.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
+                os.remove(upload)
+                os.remove(obfuscated)             
+            elif ctx.message.attachments:
+                if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
+                    ctx.command.reset_cooldown(ctx)
+                    embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
+                    return await ctx.send(embed=embed)
+                    
+                url = ctx.message.attachments[0].url
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url) as resp:
+                        response = await resp.text(encoding="utf8")      
+                path = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
+                if os.path.exists(path):
+                    os.remove(path)
+                open(path, "w").write(response)
+                try:
+                    subprocess.check_output(f"cd {file_path} && dotnet XOR.dll {path}",shell=True,stderr=subprocess.STDOUT)                    
+                except subprocess.CalledProcessError as err:
+                    log.error(f"{err}")
+                if not os.path.exists(obfuscated):
+                    ctx.command.reset_cooldown(ctx)
+                    embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                    return await ctx.send(embed=embed)
+                with open(obfuscated, "r+") as fp:
+                    lines = fp.readlines()
+                    fp.seek(0)
+                    fp.writelines(lines)
+                end_time = time.time()
+                time_elapsed = end_time - start_time
+                embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                await ctx.send(embed=embed, file=discord.File(obfuscated))
+                await self.config.user(ctx.author).xor.set(count + 1)
+                await self.config.user(ctx.author).total.set(total + 1)
+                os.remove(upload)
+                os.remove(obfuscated)
+            else:
+                embed = discord.Embed(title="No file or code block", color=0xED4245)
+                ctx.command.reset_cooldown(ctx)
+                await ctx.send(embed=embed)
+        else:
+            if ctx.guild is None:
+                return
+            cost = await self.config.guild(ctx.guild).cost()
+            balance = await bank.get_balance(ctx.author)
+            currency = await bank.get_currency_name(ctx.guild)        
+            new_balance = balance - cost
+            count = await self.config.user(ctx.author).xor()
+            total = await self.config.user(ctx.author).total() 
+            
+            if await self.config.user(ctx.author).is_whitelisted():
+                cost = 0
+                new_balance = balance
+            if not await bank.can_spend(ctx.author, cost):
+                await ctx.send(("You don't have enough {} ({}). Obfuscator cost: {} {}.").format(currency,balance,cost,currency))
+                return     
+            if not ctx.message.author.bot and ctx.message.channel.id in await self.config.guild(ctx.guild).channels():
+                letters = string.ascii_uppercase
+                filename = "".join(random.choice(letters) for i in range(7))
+                x = re.findall(r"(?<=```)[\S\s]*(?=```)", ctx.message.content)
+                obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-unpacked.lua")
+                upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
+                start_time = time.time()
+                if x:
+                    path = upload
+                    if os.path.exists(path):
+                        os.remove(path)
+                    with open(path, "w") as file:
+                        file.write(x[0])
+                    try:
+                        subprocess.check_output(f"cd {file_path} && dotnet XOR.dll {path}",shell=True,stderr=subprocess.STDOUT)                    
+                    except subprocess.CalledProcessError as err:
+                        log.error(f"{err}")
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)
+                    with open(obfuscated, "r+") as fp:
+                        lines = fp.readlines()        
+                        fp.seek(0)
+                        fp.writelines(lines)
+                    end_time = time.time()
+                    time_elapsed = end_time - start_time
+                    if cost > 0:
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                    else:
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                    await ctx.send(embed=embed, file=discord.File(obfuscated))
+                    await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).xor.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
+                    os.remove(upload)
+                    os.remove(obfuscated)             
+                elif ctx.message.attachments:
+                    if not ctx.message.attachments[0].url.endswith((".lua", ".txt")):
+                        ctx.command.reset_cooldown(ctx)
+                        embed=discord.Embed(title=f"***Wrong file extension!***", description=f"only ``.lua`` or ``.txt`` allowed", color=0xED4245)
+                        return await ctx.send(embed=embed)
+                        
+                    url = ctx.message.attachments[0].url
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(url) as resp:
+                            response = await resp.text(encoding="utf8")      
+                    path = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
+                    if os.path.exists(path):
+                        os.remove(path)
+                    open(path, "w").write(response)
+                    try:
+                        subprocess.check_output(f"cd {file_path} && dotnet XOR.dll {path}",shell=True,stderr=subprocess.STDOUT)                    
+                    except subprocess.CalledProcessError as err:
+                        log.error(f"{err}")
+                    if not os.path.exists(obfuscated):
+                        ctx.command.reset_cooldown(ctx)
+                        embed = discord.Embed(title="Error", description="\nVerify your syntax is correct and try again.", color=0xED4245)
+                        return await ctx.send(embed=embed)
+                    with open(obfuscated, "r+") as fp:
+                        lines = fp.readlines()
+                        fp.seek(0)
+                        fp.writelines(lines)
+                    end_time = time.time()
+                    time_elapsed = end_time - start_time
+                    if cost > 0:
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                    else:
+                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                    await ctx.send(embed=embed, file=discord.File(obfuscated))
+                    await bank.set_balance(ctx.author, new_balance)
+                    await self.config.user(ctx.author).xor.set(count + 1)
+                    await self.config.user(ctx.author).total.set(total + 1)
+                    os.remove(upload)
+                    os.remove(obfuscated)
+                else:
+                    embed = discord.Embed(title="No file or code block", color=0xED4245)
+                    ctx.command.reset_cooldown(ctx)
+                    await ctx.send(embed=embed)
+                    
     @obfuscate.command(name="minify")
     async def _minify(self, ctx: commands.Context):
         """
@@ -1405,7 +1582,7 @@ class Obfuscator(commands.Cog):
                 else:
                     embed = discord.Embed(title="No file or code block", color=0xED4245)
                     ctx.command.reset_cooldown(ctx)
-                    await ctx.send(embed=embed)   
+                    await ctx.send(embed=embed)
      
     @commands.group(name="obfuscatorset", aliases=["obfuscateset"])
     async def obfuscatorset(self, ctx: commands.Context) -> None:
@@ -1506,6 +1683,7 @@ class Obfuscator(commands.Cog):
         embed.add_field(name="obfuscate ironbrew", value="IronBrew Obfuscator", inline=False)        
         embed.add_field(name="obfuscate bytecode", value="Bytecode Obfuscator", inline=False)
         embed.add_field(name="obfuscate minify/unminify", value="Minifier", inline=False)
+        embed.add_field(name="obfuscate xor", value="XOR unpacker", inline=False)
         embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
         await ctx.send(embed=embed)
         
@@ -1519,6 +1697,7 @@ class Obfuscator(commands.Cog):
             prometheus = await self.config.user(ctx.author).prometheus()
             bytecode = await self.config.user(ctx.author).bytecode()
             minify = await self.config.user(ctx.author).minify()
+            xor = await self.config.user(ctx.author).xor()
             whitelisted = await self.config.user(ctx.author).is_whitelisted()
             total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify
             if total == 0:
@@ -1531,11 +1710,12 @@ class Obfuscator(commands.Cog):
             embed.add_field(name="ByteCode", value=str(bytecode), inline=True)
             embed.add_field(name="Prometheus", value=str(prometheus), inline=True)
             embed.add_field(name="Minifier", value=str(minify), inline=True)
+            embed.add_field(name="XOR", value=str(xor), inline=True)
+            embed.add_field(name="Total Uses", value=str(total), inline=True)
             if whitelisted is True:
                 embed.add_field(name="Whitelisted?", value="✅", inline=True)
             else:
                 embed.add_field(name="Whitelisted?", value="❌", inline=True) 
-            embed.add_field(name="Total Files Obfuscated", value=str(total), inline=False) 
             await ctx.send(embed=embed)
         else:
             ironbrew = await self.config.user(user).ironbrew()
@@ -1544,6 +1724,7 @@ class Obfuscator(commands.Cog):
             prometheus = await self.config.user(user).prometheus()
             bytecode = await self.config.user(user).bytecode()
             minify = await self.config.user(ctx.author).minify()
+            xor = await self.config.user(ctx.author).xor()
             whitelisted = await self.config.user(user).is_whitelisted()
             total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify
             if total == 0:
@@ -1556,11 +1737,12 @@ class Obfuscator(commands.Cog):
             embed.add_field(name="ByteCode", value=str(bytecode), inline=True)
             embed.add_field(name="Prometheus", value=str(prometheus), inline=True)
             embed.add_field(name="Minifier", value=str(minify), inline=True)
+            embed.add_field(name="XOR", value=str(xor), inline=True)
+            embed.add_field(name="Total Uses", value=str(total), inline=True)
             if whitelisted is True:
                 embed.add_field(name="Whitelisted?", value="✅", inline=True)
             else:
                 embed.add_field(name="Whitelisted?", value="❌", inline=True)   
-            embed.add_field(name="Total Files Obfuscated", value=str(total), inline=False)                
             await ctx.send(embed=embed)
             
     @obfuscate.command(name="leaderboard")
@@ -1634,7 +1816,7 @@ class Obfuscator(commands.Cog):
             for channel_id in guild_data["channels"]:
                 channel_obj = self.bot.get_channel(channel_id)
                 if channel_obj:
-                    channel_names.append("#"+channel_obj.name)
+                    channel_names.append("#"+channel_obj.mention)
         if not guild_data["users"]:
             user_names = ["No users."]
         else:
@@ -1657,7 +1839,7 @@ class Obfuscator(commands.Cog):
         embed.add_field(name="Cost:", value=("{} {}").format(str(cost),currency), inline=False)
         embed.add_field(name="Channels:", value="\n".join(channel_names))
         embed.add_field(name="Whitelist:", value="\n".join(user_names))
-        await ctx.send(embed=embed)            
+        await ctx.send(embed=embed)     
         
     def obfuscation_luaseel(self, path, filename):
         obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
