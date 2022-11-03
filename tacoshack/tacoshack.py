@@ -1,5 +1,6 @@
 import discord
 from discord.ext import tasks
+import time
 import datetime
 import contextlib
 import logging
@@ -623,9 +624,11 @@ class TacoShack(commands.Cog):
         await self.config.user(ctx.author).shack.balance.set(purchase_balance)
         await ctx.send(("✅ You have hired a(n) **{}** for $**{}**").format(str(employees[id]["name"]), cost))         
         
-    @tasks.loop(seconds=3600)
+    @tasks.loop(seconds=1)
     async def hourly_income(self):
-        await self.update_balance()
+        now = time.localtime()
+        if (now.tm_min == 00 and now.tm_sec == 00):
+            await self.update_balance()
         
     def cog_unload(self) -> None:
         self.hourly_income.cancel()
@@ -640,6 +643,7 @@ class TacoShack(commands.Cog):
             balance = await self.config.user(user).shack.balance()
             new_balance = balance + income
             await self.config.user(user).shack.balance.set(new_balance)
+        log.info("TacoShack hourly income sent.")
 
     def costcalc(self, cost, amount):
         amountT = int(amount) + 1
