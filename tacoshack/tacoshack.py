@@ -5,7 +5,6 @@ import contextlib
 import logging
 import math
 import random
-import schedule
 from typing import Literal, List, Optional
 
 from redbot.core import commands, checks, Config, bank
@@ -151,8 +150,7 @@ class TacoShack(commands.Cog):
         }   
         self.config.register_user(**default_user)        
         self.config.register_global(**default_global)
-        schedule.every().hour.at(":00").do(self.update_balance)
-        schedule.run_pending()
+        self.hourly_income.start()
         log.info("TacoShack loaded.")
 
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
@@ -625,7 +623,12 @@ class TacoShack(commands.Cog):
         await self.config.user(ctx.author).shack.balance.set(purchase_balance)
         await ctx.send(("✅ You have hired a(n) **{}** for $**{}**").format(str(employees[id]["name"]), cost))         
         
+    @tasks.loop(seconds=3600)
+    async def hourly_income(self):
+        await self.update_balance()
+        
     def cog_unload(self) -> None:
+        self.hourly_income.cancel()
         log.info("TacoShack unloaded.")
         
     async def update_balance(self):
@@ -637,7 +640,6 @@ class TacoShack(commands.Cog):
             balance = await self.config.user(user).shack.balance()
             new_balance = balance + income
             await self.config.user(user).shack.balance.set(new_balance)
-        log.info("TacoShack hourly income has been sent!")
 
     def costcalc(self, cost, amount):
         amountT = int(amount) + 1
