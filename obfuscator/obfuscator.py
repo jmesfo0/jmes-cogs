@@ -1698,7 +1698,7 @@ class Obfuscator(commands.Cog):
             beautify = await self.config.user(ctx.author).beautify()
             xor = await self.config.user(ctx.author).xor()
             whitelisted = await self.config.user(ctx.author).is_whitelisted()
-            total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify + beautify
+            total = await self.config.user(ctx.author).total()
             if total == 0:
                 return await ctx.send("You have no stats.")
             embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(ctx.author.display_name), colour=0x000088)
@@ -1727,7 +1727,7 @@ class Obfuscator(commands.Cog):
             beautify = await self.config.user(user).beautify()
             xor = await self.config.user(user).xor()
             whitelisted = await self.config.user(user).is_whitelisted()
-            total = ironbrew + luaseel + menprotect + prometheus + bytecode + minify + beautify
+            total = await self.config.user(user).total()
             if total == 0:
                 return await ctx.send("No stats for that user.")                
             embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(user.display_name), colour=0x000088)
