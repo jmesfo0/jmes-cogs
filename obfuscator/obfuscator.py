@@ -113,7 +113,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).luaseel.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -147,7 +147,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).luaseel.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -202,9 +202,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).luaseel.set(count + 1)
@@ -240,9 +240,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).luaseel.set(count + 1)
@@ -300,7 +300,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).menprotect.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -343,7 +343,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).menprotect.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -409,9 +409,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)                    
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)                    
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).menprotect.set(count + 1)
@@ -456,9 +456,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).menprotect.set(count + 1)
@@ -510,7 +510,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).prometheus.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -546,7 +546,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).prometheus.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -604,9 +604,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).prometheus.set(count + 1)
@@ -644,9 +644,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).prometheus.set(count + 1)
@@ -702,7 +702,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).ironbrew.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -743,7 +743,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).ironbrew.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -807,9 +807,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance) 
                     await self.config.user(ctx.author).ironbrew.set(count + 1)
@@ -852,9 +852,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).ironbrew.set(count + 1)
@@ -906,7 +906,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).bytecode.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -942,7 +942,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).bytecode.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -1000,9 +1000,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).bytecode.set(count + 1)
@@ -1040,9 +1040,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File obfuscated", description=("\nFile obfuscated in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).bytecode.set(count + 1)
@@ -1067,8 +1067,7 @@ class Obfuscator(commands.Cog):
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
             start_time = time.time()
             count = await self.config.user(ctx.author).xor()
-            total = await self.config.user(ctx.author).total()    
-            
+            total = await self.config.user(ctx.author).total()
             if x:
                 path = upload
                 if os.path.exists(path):
@@ -1089,7 +1088,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).xor.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -1123,7 +1122,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).xor.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -1177,9 +1176,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File unpacked", description=("\nFile unpacked in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).xor.set(count + 1)
@@ -1215,9 +1214,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File unpacked", description=("\nFile unpacked in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File unpacked", description=("\nFile unpacked in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).xor.set(count + 1)
@@ -1243,8 +1242,7 @@ class Obfuscator(commands.Cog):
             minify = "{}/{}".format(file_path, "minify.lua")
             start_time = time.time()
             count = await self.config.user(ctx.author).minify()
-            total = await self.config.user(ctx.author).total()    
-            
+            total = await self.config.user(ctx.author).total()
             if x:
                 path = upload
                 if os.path.exists(path):
@@ -1265,7 +1263,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).minify.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -1299,7 +1297,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).minify.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -1353,9 +1351,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File minified", description=("\nFile minified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File minified", description=("\nFile minified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).minify.set(count + 1)
@@ -1391,9 +1389,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File minified", description=("\nFile minified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File minified", description=("\nFile minified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File minified", description=("\nFile minified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).minify.set(count + 1)
@@ -1419,8 +1417,7 @@ class Obfuscator(commands.Cog):
             minify = "{}/{}".format(file_path, "minify.lua")
             start_time = time.time()
             count = await self.config.user(ctx.author).beautify()
-            total = await self.config.user(ctx.author).total()    
-            
+            total = await self.config.user(ctx.author).total()
             if x:
                 path = upload
                 if os.path.exists(path):
@@ -1441,7 +1438,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).beautify.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -1475,7 +1472,7 @@ class Obfuscator(commands.Cog):
                     fp.writelines(lines)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
-                embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                embed = discord.Embed(title="📂 File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                 await ctx.send(embed=embed, file=discord.File(obfuscated))
                 await self.config.user(ctx.author).beautify.set(count + 1)
                 await self.config.user(ctx.author).total.set(total + 1)
@@ -1529,9 +1526,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File beautified", description=("\nFile beautified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
+                        embed = discord.Embed(title="📂 File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).beautify.set(count + 1)
@@ -1567,9 +1564,9 @@ class Obfuscator(commands.Cog):
                     end_time = time.time()
                     time_elapsed = end_time - start_time
                     if cost > 0:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
+                        embed = discord.Embed(title="📂 File beautified", description=("\nFile beautified in ⌛({}) seconds.\n{}, You have {} {} remaining.").format(str(time_elapsed)[:5],ctx.author.mention,new_balance,currency), color=0x000088)
                     else:
-                        embed = discord.Embed(title="<:lua:1035116562736230400> File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)                    
+                        embed = discord.Embed(title="📂 File beautified", description=("\nFile beautified in ⌛({}) seconds.").format(str(time_elapsed)[:5]), color=0x000088)                    
                     await ctx.send(embed=embed, file=discord.File(obfuscated))
                     await bank.set_balance(ctx.author, new_balance)
                     await self.config.user(ctx.author).beautify.set(count + 1)
@@ -1701,7 +1698,7 @@ class Obfuscator(commands.Cog):
             total = await self.config.user(ctx.author).total()
             if total == 0:
                 return await ctx.send("You have no stats.")
-            embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(ctx.author.display_name), colour=0x000088)
+            embed = discord.Embed(title=("📂 Obfuscator Stats for {}").format(ctx.author.display_name), colour=0x000088)
             embed.set_thumbnail(url=ctx.author.avatar_url)
             embed.add_field(name="IronBrew", value=str(ironbrew), inline=True)
             embed.add_field(name="Menprotect", value=str(menprotect), inline=True)
@@ -1730,7 +1727,7 @@ class Obfuscator(commands.Cog):
             total = await self.config.user(user).total()
             if total == 0:
                 return await ctx.send("No stats for that user.")                
-            embed = discord.Embed(title=("<:lua:1035116562736230400> Obfuscator Stats for {}").format(user.display_name), colour=0x000088)
+            embed = discord.Embed(title=("📂 Obfuscator Stats for {}").format(user.display_name), colour=0x000088)
             embed.set_thumbnail(url=user.avatar_url)
             embed.add_field(name="IronBrew", value=str(ironbrew), inline=True)
             embed.add_field(name="Menprotect", value=str(menprotect), inline=True)
@@ -1788,13 +1785,12 @@ class Obfuscator(commands.Cog):
                     f"{f'{user_idx}.': <{pound_len + 2}} "
                     f"{humanize_number(account[1]['total']) + ' 📜 ': <{total_len + 4}} {user_name}\n"
                 )
-
         page_list = []
         pages = 1
         for page in pagify(temp_msg, delims=["\n"], page_length=1000):
             embed = discord.Embed(
                 colour=0x000088,
-                title="<:lua:1035116562736230400> Obfuscator Leaderboard",
+                title="📂 Obfuscator Leaderboard",
                 description=box(page, lang="md"),
             )
             embed.set_footer(text=f"Page {humanize_number(pages)}/{humanize_number(math.ceil(len(temp_msg) / 1500))}")
@@ -1828,16 +1824,18 @@ class Obfuscator(commands.Cog):
                 if user_obj:
                     user_names.append(user_obj.mention)
                           
-        watermark = guild_data["watermark"]     
+        watermark = guild_data["watermark"]  
+        global_watermark = data["watermark"]        
         cost = guild_data["cost"]
         channels = humanize_list(channel_names)
         users = humanize_list(user_names)
-
         embed = discord.Embed(colour=0x000088)
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
         embed.title = "**__Obfuscator settings:__**"
         if watermark:
             embed.add_field(name="Watermark:", value=str(watermark), inline=False)
+        if global_watermark:
+            embed.add_field(name="Global Watermark:", value=str(global_watermark), inline=False)
         embed.add_field(name="Cost:", value=("{} {}").format(str(cost),currency), inline=False)
         embed.add_field(name="Channels:", value="\n".join(channel_names))
         embed.add_field(name="Whitelist:", value="\n".join(user_names))
