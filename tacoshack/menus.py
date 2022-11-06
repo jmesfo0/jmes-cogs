@@ -1,10 +1,10 @@
 import asyncio
 import logging
-from typing import Dict, List, Tuple, Optional, Any, Iterable
-from redbot.core import commands
-from redbot.core.commands import Context
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import discord
+from redbot.core import commands
+from redbot.core.commands import Context
 from redbot.core.utils.chat_formatting import escape, humanize_number
 from redbot.vendored.discord.ext import menus
 from redbot.vendored.discord.ext.menus import First, Last, button
@@ -25,9 +25,7 @@ class TacoLeaderboardSource(menus.ListPageSource):
         start_position = (menu.current_page * self.per_page) + 1
         pos_len = len(str(start_position + 9)) + 2
         tacos_len = (len("Tacos") if len("Tacos") > tacos_len else tacos_len) + 2
-        header = (
-            f"{'#':{pos_len}}{'Tacos':{tacos_len}}{'User':2}"
-        )
+        header = f"{'#':{pos_len}}{'Tacos':{tacos_len}}{'User':2}"
         author = ctx.author
 
         if getattr(ctx, "guild", None):
@@ -60,11 +58,7 @@ class TacoLeaderboardSource(menus.ListPageSource):
 
             pos_str = position
             tacos = humanize_number(account_data["tacos"])
-            data = (
-                f"{f'{pos_str}.':{pos_len}}"
-                f"{tacos:{tacos_len}}"
-                f"{username}"
-            )
+            data = f"{f'{pos_str}.':{pos_len}}" f"{tacos:{tacos_len}}" f"{username}"
 
             players.append(data)
 
@@ -79,6 +73,7 @@ class TacoLeaderboardSource(menus.ListPageSource):
         embed.set_footer(text=f"Page {menu.current_page + 1}/{self.get_max_pages()}")
         return embed
 
+
 class ScoreboardSource(TacoLeaderboardSource):
     def __init__(self, entries: List[Tuple[int, Dict]], stat: Optional[str] = None):
         super().__init__(entries)
@@ -91,18 +86,20 @@ class ScoreboardSource(TacoLeaderboardSource):
     async def format_page(self, menu: menus.MenuPages, entries: List[Tuple[int, Dict]]):
         ctx = menu.ctx
         # if self._legend is None:
-            # self._legend = (
-                # "React with the following to go to the specified filter:\n"
-                # "\N{TACO}: Taco scoreboard\n"
-                # "\N{MONEY WITH WINGS}: Income scoreboard\n"
-                # "\U0001F4B5: Balance scoreboard\n"
-                # "\U0001F4B0: Tips scoreboard\n"
-            # )
+        # self._legend = (
+        # "React with the following to go to the specified filter:\n"
+        # "\N{TACO}: Taco scoreboard\n"
+        # "\N{MONEY WITH WINGS}: Income scoreboard\n"
+        # "\U0001F4B5: Balance scoreboard\n"
+        # "\U0001F4B0: Tips scoreboard\n"
+        # )
         stats_len = len(humanize_number(entries[0][1][self._stat])) + 3
         start_position = (menu.current_page * self.per_page) + 1
         pos_len = len(str(start_position + 9)) + 2
         stats_plural = self._stat if self._stat.endswith("s") else f"{self._stat}s"
-        stats_len = (len(stats_plural) if len(stats_plural) > stats_len else stats_len) + 2
+        stats_len = (
+            len(stats_plural) if len(stats_plural) > stats_len else stats_len
+        ) + 2
         header = f"{'#':{pos_len}}{stats_plural.title().ljust(stats_len)}{'User':2}"
         author = ctx.author
 
@@ -112,7 +109,9 @@ class ScoreboardSource(TacoLeaderboardSource):
             guild = None
 
         players = []
-        for (position, (user_id, account_data)) in enumerate(entries, start=start_position):
+        for (position, (user_id, account_data)) in enumerate(
+            entries, start=start_position
+        ):
             if guild is not None:
                 member = guild.get_member(user_id)
             else:
@@ -133,8 +132,10 @@ class ScoreboardSource(TacoLeaderboardSource):
 
             pos_str = position
             stats_value = humanize_number(account_data[self._stat.lower()])
-            
-            data = f"{f'{pos_str}.':{pos_len}}" f"{stats_value:{stats_len}}" f"{username}"
+
+            data = (
+                f"{f'{pos_str}.':{pos_len}}" f"{stats_value:{stats_len}}" f"{username}"
+            )
             players.append(data)
 
         embed = discord.Embed(
@@ -147,12 +148,16 @@ class ScoreboardSource(TacoLeaderboardSource):
         )
         embed.set_footer(text=f"Page {menu.current_page + 1}/{self.get_max_pages()}")
         return {"embed": embed, "content": self._legend}
-        
+
+
 ## https://github.com/Drapersniper/Red-DiscordBot/blob/V3/edge/redbot/core/utils/_dpy_menus_utils.py - Files used in V3/Edge
+
 
 class CannotReadMessage(menus.MenuError):
     def __init__(self):
         super().__init__("Bot does not have Read Message permissions in this channel.")
+
+
 class HybridMenu(menus.MenuPages, inherit_buttons=False):
     def __init__(
         self,
@@ -302,7 +307,10 @@ class HybridMenu(menus.MenuPages, inherit_buttons=False):
         return payload.emoji in self.buttons
 
     def message_check(self, message: discord.Message):
-        if message.author.bot or message.author.id not in (*self.bot.owner_ids, self._author_id):
+        if message.author.bot or message.author.id not in (
+            *self.bot.owner_ids,
+            self._author_id,
+        ):
             return False
         return message.content.lower() in self._actions
 
@@ -318,13 +326,17 @@ class HybridMenu(menus.MenuPages, inherit_buttons=False):
                         self.bot.wait_for("raw_reaction_add", check=self.reaction_check)
                     ),
                     asyncio.ensure_future(
-                        self.bot.wait_for("raw_reaction_remove", check=self.reaction_check)
+                        self.bot.wait_for(
+                            "raw_reaction_remove", check=self.reaction_check
+                        )
                     ),
                 ]
                 if self._actions:
                     tasks.append(
                         asyncio.ensure_future(
-                            self.bot.wait_for("message_without_command", check=self.message_check)
+                            self.bot.wait_for(
+                                "message_without_command", check=self.message_check
+                            )
                         )
                     )
 
@@ -475,7 +487,9 @@ class HybridMenu(menus.MenuPages, inherit_buttons=False):
         self._event.clear()
         msg = self.message
         if msg is None:
-            self.message = msg = await self.send_initial_message(ctx, channel, page=page)
+            self.message = msg = await self.send_initial_message(
+                ctx, channel, page=page
+            )
         self._register_keyword()
         if self.should_add_reactions() or self._actions:
             # Start the task first so we can listen to reactions before doing anything
@@ -597,6 +611,7 @@ class HybridMenu(menus.MenuPages, inherit_buttons=False):
         # The call here is safe because it's guarded by skip_if
         await self.show_page(self._source.get_max_pages() - 1)
 
+
 class SimpleHybridMenu(HybridMenu, inherit_buttons=True):
     def __init__(
         self,
@@ -640,7 +655,8 @@ class SimpleHybridMenu(HybridMenu, inherit_buttons=True):
             keyword_to_reaction_mapping=keyword_to_reaction_mapping,
             **kwargs,
         )
-        
+
+
 class BaseMenu(menus.MenuPages, inherit_buttons=False):
     def __init__(
         self,
@@ -726,7 +742,9 @@ class BaseMenu(menus.MenuPages, inherit_buttons=False):
         self._event.clear()
         msg = self.message
         if msg is None:
-            self.message = msg = await self.send_initial_message(ctx, channel, page=page)
+            self.message = msg = await self.send_initial_message(
+                ctx, channel, page=page
+            )
         if self.should_add_reactions():
             # Start the task first so we can listen to reactions before doing anything
             for task in self.__tasks:
@@ -747,7 +765,9 @@ class BaseMenu(menus.MenuPages, inherit_buttons=False):
             if wait:
                 await self._event.wait()
 
-    async def send_initial_message(self, ctx: commands.Context, channel: discord.abc.Messageable, page: int = 0):
+    async def send_initial_message(
+        self, ctx: commands.Context, channel: discord.abc.Messageable, page: int = 0
+    ):
         """
 
         The default implementation of :meth:`Menu.send_initial_message`
@@ -837,7 +857,8 @@ class BaseMenu(menus.MenuPages, inherit_buttons=False):
     async def stop_pages(self, payload: discord.RawReactionActionEvent) -> None:
         """stops the pagination session."""
         self.stop()
-        
+
+
 class ScoreBoardMenu(BaseMenu, inherit_buttons=False):
     def __init__(
         self,
@@ -881,40 +902,52 @@ class ScoreBoardMenu(BaseMenu, inherit_buttons=False):
             return
         self._current = "tacos"
         tacos_sorted = await self.cog.get_global_scoreboard(
-            guild=self.ctx.guild if not self.show_global else None, keyword=self._current
+            guild=self.ctx.guild if not self.show_global else None,
+            keyword=self._current,
         )
-        await self.change_source(source=ScoreboardSource(entries=tacos_sorted, stat=self._current))
-        
+        await self.change_source(
+            source=ScoreboardSource(entries=tacos_sorted, stat=self._current)
+        )
+
     @menus.button("\N{MONEY WITH WINGS}")
     async def _income(self, payload: discord.RawReactionActionEvent) -> None:
         if self._current == "income":
             return
         self._current = "income"
         income_sorted = await self.cog.get_global_scoreboard(
-            guild=self.ctx.guild if not self.show_global else None, keyword=self._current
+            guild=self.ctx.guild if not self.show_global else None,
+            keyword=self._current,
         )
-        await self.change_source(source=ScoreboardSource(entries=income_sorted, stat=self._current))
-        
+        await self.change_source(
+            source=ScoreboardSource(entries=income_sorted, stat=self._current)
+        )
+
     @menus.button("\U0001F4B5")
     async def _balance(self, payload: discord.RawReactionActionEvent) -> None:
         if self._current == "balance":
             return
         self._current = "balance"
         balance_sorted = await self.cog.get_global_scoreboard(
-            guild=self.ctx.guild if not self.show_global else None, keyword=self._current
+            guild=self.ctx.guild if not self.show_global else None,
+            keyword=self._current,
         )
-        await self.change_source(source=ScoreboardSource(entries=balance_sorted, stat=self._current))
-        
+        await self.change_source(
+            source=ScoreboardSource(entries=balance_sorted, stat=self._current)
+        )
+
     @menus.button("\U0001F4B0")
     async def _tips(self, payload: discord.RawReactionActionEvent) -> None:
         if self._current == "tips":
             return
         self._current = "tips"
         tips_sorted = await self.cog.get_global_scoreboard(
-            guild=self.ctx.guild if not self.show_global else None, keyword=self._current
+            guild=self.ctx.guild if not self.show_global else None,
+            keyword=self._current,
         )
-        await self.change_source(source=ScoreboardSource(entries=tips_sorted, stat=self._current))      
-        
+        await self.change_source(
+            source=ScoreboardSource(entries=tips_sorted, stat=self._current)
+        )
+
     @menus.button(
         "\N{BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}\N{VARIATION SELECTOR-16}",
         skip_if=_skip_double_triangle_buttons,
