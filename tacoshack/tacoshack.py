@@ -188,24 +188,20 @@ class TacoShack(commands.Cog):
     @_shack.command(name="shack", aliases=["myshack"])
     async def _myshack(self, ctx: commands.Context, *, user: Optional[discord.Member]) -> None:
         """View your shack / users shack."""
-
         if not user:
             user = ctx.author # thank you @sravan1946 ;)
- 
         if not await self.config.user(user).shack.has_founded():
             return await ctx.send("First you must 'found' your shack.")
         today = datetime.date.today()
         joined = await self.config.user(user).shack.joined()
         joined_date = datetime.datetime.strptime(joined, '%Y-%m-%d').date()
         delta = today - joined_date
-        
         name = await self.config.user(user).shack.name()
         slogan = await self.config.user(user).shack.slogan()              
         balance = await self.config.user(user).shack.balance()
         income = await self.config.user(user).shack.income()
         tips = await self.config.user(user).shack.tips()
         tacos = await self.config.user(user).shack.tacos()
-        
         embed = discord.Embed(title=str(name), colour=0xf9a422)
         embed.set_thumbnail(url=user.avatar_url)
         embed.add_field(name="Name", value="🔺 "+str(name)+" 🏛\n"+str(slogan), inline=False)
@@ -215,7 +211,6 @@ class TacoShack(commands.Cog):
         embed.add_field(name="Total Tacos", value="🌮 " + str(tacos), inline=False)
         embed.add_field(name="Shack Age", value="⌛ "+ str(delta.days) + " days", inline=False)
         await ctx.send(embed=embed)
-        
 
     @_shack.command(name="leaderboard", aliases=["scoreboard", "top"])
     @commands.bot_has_permissions(add_reactions=True, embed_links=True)
