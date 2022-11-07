@@ -189,52 +189,32 @@ class TacoShack(commands.Cog):
     async def _myshack(self, ctx: commands.Context, *, user: Optional[discord.Member]) -> None:
         """View your shack / users shack."""
 
-        if not user:     
-            if not await self.config.user(ctx.author).shack.has_founded():
-                return await ctx.send("First you must 'found' your shack.")
-            today = datetime.date.today()
-            joined = await self.config.user(ctx.author).shack.joined()
-            joined_date = datetime.datetime.strptime(joined, '%Y-%m-%d').date()
-            delta = today - joined_date
-            
-            name = await self.config.user(ctx.author).shack.name()
-            slogan = await self.config.user(ctx.author).shack.slogan()              
-            balance = await self.config.user(ctx.author).shack.balance()
-            income = await self.config.user(ctx.author).shack.income()
-            tips = await self.config.user(ctx.author).shack.tips()
-            tacos = await self.config.user(ctx.author).shack.tacos()
-            
-            embed = discord.Embed(title=str(name), colour=0xf9a422)
-            embed.set_thumbnail(url=ctx.author.avatar_url)
-            embed.add_field(name="Name", value="🔺 "+str(name)+" 🏛\n"+str(slogan), inline=False)
-            embed.add_field(name="Balance", value="💵 $" + str(balance), inline=False)
-            embed.add_field(name="Income", value="💸 $" + str(income) + "/hour", inline=False)
-            embed.add_field(name="Total Tips", value="💰 $" + str(tips), inline=False)
-            embed.add_field(name="Total Tacos", value="🌮 " + str(tacos), inline=False)
-            embed.add_field(name="Shack Age", value="⌛ "+ str(delta.days) + " days", inline=False)
-            await ctx.send(embed=embed)
-        else:
-            today = datetime.date.today()
-            joined = await self.config.user(user).shack.joined()
-            joined_date = datetime.datetime.strptime(joined, '%Y-%m-%d').date()
-            delta = today - joined_date
-            
-            name = await self.config.user(user).shack.name()
-            slogan = await self.config.user(user).shack.slogan()              
-            balance = await self.config.user(user).shack.balance()
-            income = await self.config.user(user).shack.income()
-            tips = await self.config.user(user).shack.tips()
-            tacos = await self.config.user(user).shack.tacos()
-            
-            embed = discord.Embed(title=str(name), colour=0xf9a422)
-            embed.set_thumbnail(url=user.avatar_url)
-            embed.add_field(name="Name", value="🔺 "+str(name)+" 🏛\n"+str(slogan), inline=False)
-            embed.add_field(name="Balance", value="💵 $" + str(balance), inline=False)
-            embed.add_field(name="Income", value="💸 $" + str(income) + "/hour", inline=False)
-            embed.add_field(name="Total Tips", value="💰 $" + str(tips), inline=False)
-            embed.add_field(name="Total Tacos", value="🌮 " + str(tacos), inline=False)
-            embed.add_field(name="Shack Age", value="⌛ "+ str(delta.days) + " days", inline=False)
-            await ctx.send(embed=embed)
+        if not user:
+            user = ctx.author # thank you @sravan1946 ;)
+ 
+        if not await self.config.user(user).shack.has_founded():
+            return await ctx.send("First you must 'found' your shack.")
+        today = datetime.date.today()
+        joined = await self.config.user(user).shack.joined()
+        joined_date = datetime.datetime.strptime(joined, '%Y-%m-%d').date()
+        delta = today - joined_date
+        
+        name = await self.config.user(user).shack.name()
+        slogan = await self.config.user(user).shack.slogan()              
+        balance = await self.config.user(user).shack.balance()
+        income = await self.config.user(user).shack.income()
+        tips = await self.config.user(user).shack.tips()
+        tacos = await self.config.user(user).shack.tacos()
+        
+        embed = discord.Embed(title=str(name), colour=0xf9a422)
+        embed.set_thumbnail(url=user.avatar_url)
+        embed.add_field(name="Name", value="🔺 "+str(name)+" 🏛\n"+str(slogan), inline=False)
+        embed.add_field(name="Balance", value="💵 $" + str(balance), inline=False)
+        embed.add_field(name="Income", value="💸 $" + str(income) + "/hour", inline=False)
+        embed.add_field(name="Total Tips", value="💰 $" + str(tips), inline=False)
+        embed.add_field(name="Total Tacos", value="🌮 " + str(tacos), inline=False)
+        embed.add_field(name="Shack Age", value="⌛ "+ str(delta.days) + " days", inline=False)
+        await ctx.send(embed=embed)
         
 
     @_shack.command(name="leaderboard", aliases=["scoreboard", "top"])
