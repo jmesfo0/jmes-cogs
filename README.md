@@ -5,17 +5,11 @@ jmes cogs for Red-DiscordBot
 ```
 [p]repo add jmes-cogs https://github.com/jmesfo0/jmes-cogs
 [p]cog install jmes-cogs pexels
-[p]cog install jmes-cogs obfuscator
 [p]cog install jmes-cogs tacoshack
 ```
 [p] = Your bot's prefix
-
-- [Lua 5.1](https://sourceforge.net/projects/luabinaries/files/5.1.5/)<br>
-- [Node.js 16](https://nodejs.org/dist/v16.17.1/)<br>
-- [Dotnet Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)<br>
 
 ### Need Help?
 [jmes#1396](https://discordapp.com/users/309536563161989120)<br>
 [jmes Discord](https://discord.jmes.dev)<br>
 [Red Cog Support](https://discord.gg/GET4DVk) - [#other-cogs](https://discord.com/channels/240154543684321280/240212783503900673)<br><br>
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com) 
