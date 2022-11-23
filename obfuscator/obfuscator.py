@@ -1662,14 +1662,14 @@ class Obfuscator(commands.Cog):
     async def obfuscation_version(self, ctx: commands.Context):
         """Display version information."""
         embed = discord.Embed(title="Version/About", description=("\nObfuscator version: {}\nCog author: [{}](https://discordapp.com/users/309536563161989120)").format(self.__version__,self.__author__), color=0x000088)
-        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+        embed.set_thumbnail(url="https://imgur.com/OmT0YOc.png")
         await ctx.send(embed=embed)
         
     @obfuscate.command(name="help")
     async def obfuscation_help(self, ctx: commands.Context):
         """Display help information."""
         embed = discord.Embed(title="Obfuscator Commands", colour=0x000088)
-        embed.set_thumbnail(url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")
+        embed.set_thumbnail(url="https://imgur.com/OmT0YOc.png")
         embed.add_field(name="obfuscate", value="the default obfuscator command", inline=False) 
         embed.add_field(name="obfuscate luaseel", value="LuaSeel Obfuscator (default)", inline=False)        
         embed.add_field(name="obfuscate menprotect", value="Menprotect Obfuscator", inline=False)        
@@ -1679,7 +1679,7 @@ class Obfuscator(commands.Cog):
         embed.add_field(name="obfuscate minify", value="Minifier", inline=False)
         embed.add_field(name="obfuscate beautify", value="Beautifier", inline=False)
         embed.add_field(name="obfuscate xor", value="XOR unpacker", inline=False)
-        embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://github.com/jmesfo0/jmes-cogs/raw/main/obfuscator/lua.png")        
+        embed.set_footer(text=("Obfuscator ({})").format(self.__version__), icon_url="https://imgur.com/OmT0YOc.png")        
         await ctx.send(embed=embed)
         
     @obfuscate.command(name="stats", aliases=["view"])
