@@ -670,7 +670,7 @@ class Obfuscator(commands.Cog):
             output_file = "{}/{}/{}".format(file_path, "obfuscated", "output.lua")
             obfuscated = "{}/{}/{}".format(file_path, "obfuscated", filename + "-obfuscated.lua")
             upload = "{}/{}/{}".format(file_path, "uploads", filename + ".lua")
-            watermark = await self.config.guild(ctx.guild).watermark()
+            watermark = await self.config.watermark()
             path = "{}/{}".format("./uploads", filename + ".lua")
             start_time = time.time()
             count = await self.config.user(ctx.author).ironbrew()
