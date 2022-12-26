@@ -18,4 +18,3 @@ jmes cogs for Red-DiscordBot
 [jmes#1396](https://discordapp.com/users/309536563161989120)<br>
 [jmes Discord](https://discord.jmes.dev)<br>
 [Red Cog Support](https://discord.gg/GET4DVk) - [#other-cogs](https://discord.com/channels/240154543684321280/240212783503900673)<br><br>
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com) 
