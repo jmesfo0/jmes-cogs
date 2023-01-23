@@ -364,6 +364,7 @@ class TacoShack(commands.Cog):
         await ctx.send(("You have claimed your daily reward of **${}** 💰!").format(amount))
             
     @_shack.command(name="deposit")
+    @commands.cooldown(rate=1, per=600, type=commands.BucketType.user)
     @commands.guild_only()
     async def _deposit(
         self,
@@ -391,6 +392,7 @@ class TacoShack(commands.Cog):
         )
 
     @_shack.command(name="withdraw")
+    @commands.cooldown(rate=1, per=600, type=commands.BucketType.user)
     @commands.guild_only()
     async def _withdraw(
         self,
