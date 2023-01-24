@@ -1,16 +1,11 @@
-import logging
-from typing import List, Tuple
-
 import aiohttp
 import discord
-from typing import Optional
-from discord.ext.commands.converter import Converter
-from discord.ext.commands.errors import BadArgument
+import json
+import logging
 from redbot.core import Config, checks, commands
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
-
 import requests
-import json
+from typing import Optional, List, Tuple
 
 log = logging.getLogger("red.jmes-cogs.scriptmanager")
 
