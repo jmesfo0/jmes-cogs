@@ -16,7 +16,8 @@
     ],
     "name" : "ScriptManager",
     "permissions" : [
-        "embed_links"
+        "embed_links",
+        "attach_files",
     ],
     "required_cogs" : {},
     "requirements" : [
