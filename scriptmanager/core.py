@@ -45,6 +45,10 @@ class ScriptManager(commands.Cog):
         """
         embeds = []
         async with self.config.scripts() as data:
+        
+            if data is None:
+                return await ctx.send(f"There are no scripts in the database.\nYou can add one by typing `{ctx.clean_prefix}scriptset add`")
+        
             for x in data:
                 name = data[x]['name']
                 description = data[x]['description']
@@ -72,8 +76,8 @@ class ScriptManager(commands.Cog):
         pass
     
     @checks.is_owner()    
-    @scriptset.command(name="add")
-    async def add(self, ctx: commands.Context, name: str, description: str, gameid: int, loadstring: str, thumbnail: Optional[str] = None):
+    @scriptset.command(name="add", aliases=["new"])
+    async def _add(self, ctx: commands.Context, name: str, description: str, gameid: int, loadstring: str, thumbnail: Optional[str] = None):
         """
         Add a script to the Script Manager
         """
@@ -102,3 +106,34 @@ class ScriptManager(commands.Cog):
                 return await ctx.send(f"Script name {name} was successfully deleted from the database.")
             else:
                 return await ctx.send(f"Script name {name} was not found in the database.")
+
+    @checks.is_owner()    
+    @scriptset.command(name="edit", aliases=["update"])
+    async def _edit(self, ctx: commands.Context, name: str, description: Optional[str], gameid: Optional[int], loadstring: Optional[str], thumbnail: Optional[str]):
+        """
+        Edit a script in the Script Manager
+        """
+        async with self.config.scripts() as data:
+            if name in data:
+                if description:
+                    data[name] = {
+                        "description": description,                   
+                      }
+                    await ctx.send(f"{name} description successfully updated.")                      
+                if gameid:      
+                    data[name] = {
+                        "gameid": gameid,
+                      }
+                    await ctx.send(f"{name} gameid successfully updated.")
+                if loadstring:      
+                    data[name] = {                 
+                        "loadstring": loadstring,
+                      }
+                    await ctx.send(f"{name} loadstring successfully updated.")
+                if thumbnail:      
+                    data[name] = {                 
+                        "thumbnail": thumbnail,
+                      }
+                    await ctx.send(f"{name} thumbnail successfully updated.")
+            else:
+                await ctx.send(f"Script {name} not found in database.")
