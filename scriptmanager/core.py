@@ -106,12 +106,51 @@ class ScriptManager(commands.Cog):
                 return await ctx.send(f"Script name {name} was successfully deleted from the database.")
             else:
                 return await ctx.send(f"Script name {name} was not found in the database.")
+                
+    @checks.is_owner()    
+    @scriptset.group(name="edit")
+    async def _edit(self, ctx: commands.Context) -> None:
+        """
+        Various Script Manager settings.
+        """
+        pass
 
     @checks.is_owner()    
-    @scriptset.command(name="edit", aliases=["update"])
-    async def _edit(self, ctx: commands.Context, name: str, description: Optional[str], gameid: Optional[int], loadstring: Optional[str], thumbnail: Optional[str]):
+    @_edit.command(name="description", aliases=["d"])
+    async def _description(self, ctx: commands.Context, name: str, description: Optional[str]):
         """
-        Edit a script in the Script Manager
+        Edit a script description
+        """
+        await self.script_edit(ctx, name, description=description)
+        
+    @checks.is_owner()    
+    @_edit.command(name="gameid", aliases=["g"])
+    async def _gameid(self, ctx: commands.Context, name: str, gameid: Optional[int]):
+        """
+        Edit a script gameid
+        """
+        await self.script_edit(ctx, name, gameid=gameid)
+        
+    @checks.is_owner()    
+    @_edit.command(name="loadstring", aliases=["l"])
+    async def _loadstring(self, ctx: commands.Context, name: str, loadstring: Optional[str]):
+        """
+        Edit a script loadstring
+        """
+        await self.script_edit(ctx, name, loadstring=loadstring)
+        
+    @checks.is_owner()    
+    @_edit.command(name="thumbnail", aliases=["t"])
+    async def _thumbnail(self, ctx: commands.Context, name: str, thumbnail: Optional[str]):
+        """
+        Edit a script thumbnail
+        """
+        await self.script_edit(ctx, name, thumbnail=thumbnail)
+                
+                
+    async def script_edit(self, ctx, name: str, description=None, gameid=None, loadstring=None, thumbnail=None) -> dict:
+        """
+        Runs multiple database queries to obtain the player's information
         """
         async with self.config.scripts() as data:
             if name in data:
