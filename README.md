@@ -7,6 +7,7 @@ jmes cogs for Red-DiscordBot
 [p]cog install jmes-cogs pexels
 [p]cog install jmes-cogs obfuscator
 [p]cog install jmes-cogs tacoshack
+[p]cog install jmes-cogs scriptmanager
 ```
 [p] = Your bot's prefix
 
