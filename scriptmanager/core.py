@@ -111,7 +111,7 @@ class ScriptManager(commands.Cog):
     @scriptset.group(name="edit")
     async def _edit(self, ctx: commands.Context) -> None:
         """
-        Various Script Manager settings.
+        Script Manager edit commands.
         """
         pass
 
