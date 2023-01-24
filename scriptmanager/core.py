@@ -26,29 +26,7 @@ class ScriptManager(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, 34234245643, force_registration=True)
         default_global = {
-            "scripts": {
-                "psx-jmes": {
-                    "name": "psx-jmes",
-                    "gameid": "6284583030",
-                    "description": "Pet Simulator X",                   
-                    "thumbnail": "",
-                    "loadstring": "loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/jmesfo0/RobloxScripts/main/psx-jmes.lua'))()",
-                },
-                "cap-jmes": {
-                    "name": "cap-jmes",
-                    "gameid": "8884433153",
-                    "description": "Collect All Pets",
-                    "thumbnail": "",
-                    "loadstring": "loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/jmesfo0/RobloxScripts/main/cap-jmes.lua'))()",
-                },
-                "lankybox-jmes": {
-                    "name": "lankybox-jmes",
-                    "gameid": "6285815281",
-                    "description": "LankyBox Simulator",
-                    "thumbnail": "",
-                    "loadstring": "loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/jmesfo0/RobloxScripts/main/lankybox-jmes.lua'))()",
-                }
-            }
+            "scripts": {}
         }
         self.config.register_global(**default_global)
         
