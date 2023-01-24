@@ -18,10 +18,10 @@ class ScriptManager(commands.Cog):
     """
     Script Manager for organizing Roblox/FiveM scripts.
     """
-
+    
     __version__ = "1.0.0"
     __author__ = "jmes"
-
+    
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, 34234245643, force_registration=True)
@@ -33,18 +33,17 @@ class ScriptManager(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         pre_processed = super().format_help_for_context(ctx)
         return f"{pre_processed}\n\nCog Version: {self.__version__}"
-
+    
     async def red_delete_data_for_user(self, **kwargs):
         """
         Nothing to delete
         """
         return
-
+    
     @commands.command(name="script", aliases=["scripts"])
     @commands.bot_has_permissions(embed_links=True)
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     async def script(self, ctx: commands.Context):
-
         """
         Displays scripts in Script Manager database.
         
@@ -67,7 +66,6 @@ class ScriptManager(commands.Cog):
                 else:
                     embed.set_thumbnail(url=imagedata["data"][0]["imageUrl"])
                 embeds.append(embed)
-            
         await menu(ctx, pages=embeds, controls=DEFAULT_CONTROLS, message=None, page=0, timeout=20)
         
     @checks.is_owner()    
@@ -77,7 +75,7 @@ class ScriptManager(commands.Cog):
         Various Script Manager settings.
         """
         pass
-        
+    
     @checks.is_owner()    
     @scriptset.command(name="add")
     async def add(self, ctx: commands.Context, name: str, description: str, gameid: int, loadstring: str, thumbnail: Optional[str] = None):
