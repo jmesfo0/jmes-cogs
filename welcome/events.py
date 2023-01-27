@@ -207,9 +207,6 @@ class Events:
         else:
             sanitize = {}
 
-        if is_fun and channel.permissions_for(guild.me).embed_links:
-            await channel.send(fun_image)
-
         if bot_role:
             try:
                 role = cast(discord.abc.Snowflake, guild.get_role(bot_role))
@@ -238,8 +235,7 @@ class Events:
                     await self.convert_parms(member, guild, bot_welcome, False), **sanitize
                 )
             if is_fun and channel.permissions_for(guild.me).embed_links:
-                random_fun = random.choice(fun_image)
-                await channel.send(random_fun)
+                await channel.send(fun_image)
 
     async def get_welcome_channel(
         self, member: Union[discord.Member, List[discord.Member]], guild: discord.Guild
@@ -286,9 +282,6 @@ class Events:
             sanitize = {"allowed_mentions": discord.AllowedMentions(**mentions)}
         else:
             sanitize = {}
-            
-        if is_fun and channel.permissions_for(guild.me).embed_links:
-            await channel.send(fun_image)
             
         if await self.config.guild(guild).DELETE_PREVIOUS_GREETING():
             old_id = await self.config.guild(guild).LAST_GREETING()
@@ -361,6 +354,8 @@ class Events:
             )
         if save_msg is not None:
             await self.config.guild(guild).LAST_GREETING.set(save_msg.id)
+        if is_fun and channel.permissions_for(guild.me).embed_links:
+            await channel.send(fun_image)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member) -> None:
@@ -517,6 +512,5 @@ class Events:
                     delete_after=60,
                     **sanitize,
                 )
-                
         if is_fun and channel.permissions_for(guild.me).embed_links:
             await channel.send(fun_image)
