@@ -1,7 +1,8 @@
 {
     "author" : [
         "irdumb",
-        "TrustyJAID"
+        "TrustyJAID",
+        "jmes"
     ],
     "description" : "Welcome new users to the server or say goodbye when they leave.",
     "disabled" : false,
