@@ -168,7 +168,6 @@ class TacoShack(commands.Cog):
         log.info("TacoShack unloaded.")
         
     async def update_balance(self):
-        log.info("TacoShack hourly incomes sent.")
         for x in await self.config.all_users():
             user = self.bot.get_user(x)
             if not user:
@@ -177,6 +176,7 @@ class TacoShack(commands.Cog):
             balance = await self.config.user(user).shack.balance()
             new_balance = balance + income
             await self.config.user(user).shack.balance.set(new_balance)
+        log.info("TacoShack hourly incomes sent.")
 
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     @commands.group(name="tacoshack", aliases=["ts", "shack", "taco"])
