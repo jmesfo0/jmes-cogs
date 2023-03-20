@@ -1,12 +1,14 @@
 import discord
 from discord.ext import tasks
-import time
-import datetime
 import contextlib
 import logging
 import math
 import random
 from typing import Literal, List, Optional
+import asyncio
+import aioschedule as schedule
+import time
+import datetime
 
 from redbot.core import commands, checks, Config, bank
 from redbot.core.bot import Red
@@ -151,8 +153,30 @@ class TacoShack(commands.Cog):
         }   
         self.config.register_user(**default_user)        
         self.config.register_global(**default_global)
-        self.hourly_income.start()
+        
         log.info("TacoShack loaded.")
+        schedule.every().hour.at(":00").do(self.update_balance)
+        self.hourly_income.start()
+        
+    @tasks.loop(seconds=1)
+    async def hourly_income(self):
+        await schedule.run_pending()
+
+    def cog_unload(self) -> None:
+        self.hourly_income.cancel()
+        schedule.clear()
+        log.info("TacoShack unloaded.")
+        
+    async def update_balance(self):
+        log.info("TacoShack hourly incomes sent.")
+        for x in await self.config.all_users():
+            user = self.bot.get_user(x)
+            if not user:
+                return
+            income = await self.config.user(user).shack.income()
+            balance = await self.config.user(user).shack.balance()
+            new_balance = balance + income
+            await self.config.user(user).shack.balance.set(new_balance)
 
     @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     @commands.group(name="tacoshack", aliases=["ts", "shack", "taco"])
@@ -184,10 +208,26 @@ class TacoShack(commands.Cog):
             await ctx.author.send(embed=embed)
         else:
             await ctx.send("You already own a shack")
+            
+    @_shack.command(name="balance")
+    async def _balance(self, ctx: commands.Context, *, user: Optional[discord.Member]) -> None:
+        """View your shack balance."""
+        if not user:
+            user = ctx.author # thank you @sravan1946 ;)
+        if not await self.config.user(user).shack.has_founded():
+            return await ctx.send("First you must 'found' your shack.")
+        name = await self.config.user(user).shack.name()
+        slogan = await self.config.user(user).shack.slogan()              
+        balance = await self.config.user(user).shack.balance()
+        embed = discord.Embed(title=str(name), colour=0xf9a422)
+        embed.set_thumbnail(url=user.avatar_url)
+        embed.add_field(name="Name", value="🔺 "+str(name)+" 🏛\n"+str(slogan), inline=False)
+        embed.add_field(name="Balance", value="💵 $" + str(balance), inline=False)
+        await ctx.send(embed=embed)
         
     @_shack.command(name="shack", aliases=["myshack"])
     async def _myshack(self, ctx: commands.Context, *, user: Optional[discord.Member]) -> None:
-        """View your shack / users shack."""
+        """View your shack."""
         if not user:
             user = ctx.author # thank you @sravan1946 ;)
         if not await self.config.user(user).shack.has_founded():
@@ -366,18 +406,10 @@ class TacoShack(commands.Cog):
     @_shack.command(name="deposit")
     @commands.cooldown(rate=1, per=600, type=commands.BucketType.user)
     @commands.guild_only()
-    async def _deposit(
-        self,
-        ctx: commands.Context,
-        amount: int,
-    ):
+    async def _deposit(self, ctx: commands.Context, amount: int):
         """Deposit bank currency into shack balance."""
         if amount <= 0:
             return await ctx.send("Uh oh, amount has to be more than 0.")
-
-        conf = (
-            self.config
-        )
 
         currency = await bank.get_currency_name(ctx.guild)
 
@@ -394,19 +426,11 @@ class TacoShack(commands.Cog):
     @_shack.command(name="withdraw")
     @commands.cooldown(rate=1, per=600, type=commands.BucketType.user)
     @commands.guild_only()
-    async def _withdraw(
-        self,
-        ctx: commands.Context,
-        amount: int,
-    ):
+    async def _withdraw(self, ctx: commands.Context, amount: int):
         """Withdraw shack balance into bank currency."""
         if amount <= 0:
             return await ctx.send("Uh oh, amount has to be more than 0.")
-
-        conf = (
-            self.config
-        )
-
+        
         currency = await bank.get_currency_name(ctx.guild)
 
         if not await self._can_spend(True, ctx.author, amount):
@@ -601,26 +625,6 @@ class TacoShack(commands.Cog):
         await self.config.user(ctx.author).shack.balance.set(purchase_balance)
         await ctx.send(("✅ You have hired a(n) **{}** for $**{}**").format(str(employees[id]["name"]), cost))         
         
-    @tasks.loop(seconds=1)
-    async def hourly_income(self):
-        now = time.localtime()
-        if (now.tm_min == 00 and now.tm_sec == 00):
-            await self.update_balance()
-        
-    def cog_unload(self) -> None:
-        self.hourly_income.cancel()
-        log.info("TacoShack unloaded.")
-        
-    async def update_balance(self):
-        for user in await self.config.all_users():
-            user = self.bot.get_user(user)
-            if not user:
-                return
-            income = await self.config.user(user).shack.income()
-            balance = await self.config.user(user).shack.balance()
-            new_balance = balance + income
-            await self.config.user(user).shack.balance.set(new_balance)
-        log.info("TacoShack hourly income sent.")
 
     def costcalc(self, cost, amount):
         amountT = int(amount) + 1
@@ -628,8 +632,7 @@ class TacoShack(commands.Cog):
         price = amountTotal * int(cost)
         return price
        
-    async def get_global_scoreboard(
-        self, positions: int = None, guild: discord.Guild = None, keyword: str = None) -> List[tuple]:
+    async def get_global_scoreboard(self, positions: int = None, guild: discord.Guild = None, keyword: str = None) -> List[tuple]:
         if keyword is None:
             keyword = "tacos"
         raw_accounts = await self.config.all_users()
