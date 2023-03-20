@@ -9,7 +9,7 @@
         "jmes"
     ],
     "required_cogs": {},
-    "requirements": [],
+    "requirements": ["aioschedule"],
     "tags": [
         "tacoshack",
 	"shack",		
