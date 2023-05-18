@@ -1699,7 +1699,7 @@ class Obfuscator(commands.Cog):
             if total == 0:
                 return await ctx.send("You have no stats.")
             embed = discord.Embed(title=("📂 Obfuscator Stats for {}").format(ctx.author.display_name), colour=0x000088)
-            embed.set_thumbnail(url=ctx.author.avatar_url)
+            embed.set_thumbnail(url=ctx.author.avatar)
             embed.add_field(name="IronBrew", value=str(ironbrew), inline=True)
             embed.add_field(name="Menprotect", value=str(menprotect), inline=True)
             embed.add_field(name="LuaSeel", value=str(luaseel), inline=True)
@@ -1728,7 +1728,7 @@ class Obfuscator(commands.Cog):
             if total == 0:
                 return await ctx.send("No stats for that user.")                
             embed = discord.Embed(title=("📂 Obfuscator Stats for {}").format(user.display_name), colour=0x000088)
-            embed.set_thumbnail(url=user.avatar_url)
+            embed.set_thumbnail(url=user.avatar)
             embed.add_field(name="IronBrew", value=str(ironbrew), inline=True)
             embed.add_field(name="Menprotect", value=str(menprotect), inline=True)
             embed.add_field(name="LuaSeel", value=str(luaseel), inline=True)
