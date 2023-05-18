@@ -1830,7 +1830,7 @@ class Obfuscator(commands.Cog):
         channels = humanize_list(channel_names)
         users = humanize_list(user_names)
         embed = discord.Embed(colour=0x000088)
-        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon)
         embed.title = "**__Obfuscator settings:__**"
         if watermark:
             embed.add_field(name="Watermark:", value=str(watermark), inline=False)
