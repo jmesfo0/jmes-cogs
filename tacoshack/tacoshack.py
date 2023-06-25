@@ -160,7 +160,7 @@ class TacoShack(commands.Cog):
         
     @tasks.loop(seconds=1)
     async def hourly_income(self):
-        await schedule.run_pending()
+        await asyncio.wait(schedule.run_pending())
 
     def cog_unload(self) -> None:
         self.hourly_income.cancel()
