@@ -6,7 +6,7 @@ import math
 import random
 from typing import Literal, List, Optional
 import asyncio
-import aioschedule as schedule
+# import aioschedule as schedule
 import time
 import datetime
 
@@ -155,16 +155,16 @@ class TacoShack(commands.Cog):
         self.config.register_global(**default_global)
         
         log.info("TacoShack loaded.")
-        schedule.every().hour.at(":00").do(self.update_balance)
+        #schedule.every().hour.at(":00").do(self.update_balance)
         self.hourly_income.start()
         
-    @tasks.loop(seconds=1)
+    @tasks.loop(seconds=3600)
     async def hourly_income(self):
         await asyncio.wait(schedule.run_pending())
 
     def cog_unload(self) -> None:
         self.hourly_income.cancel()
-        schedule.clear()
+        #schedule.clear()
         log.info("TacoShack unloaded.")
         
     async def update_balance(self):
